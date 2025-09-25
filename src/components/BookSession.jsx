@@ -25,16 +25,11 @@ const DoctorCard = ({ doctor, onBookClick }) => {
     <div className="bg-white border border-gray-200 rounded-2xl p-6 min-h-[120px] flex flex-col space-y-3 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
       {/* Image + Name + Specialization in one row */}
       <div className="flex items-center space-x-4 mb-3">
-       <img
-            src={
-              doctor.profileImage
-                ? `${backend_url}/uploads/${doctor.profileImage}`
-                : "/default-doctor.png"
-            }
-            alt={doctor.name}
-            className="w-20 h-20 rounded-full object-cover shadow"
-          />
-
+        <img
+          src={doctor.profileImage || "/default-doctor.png"}
+          alt={doctor.name}
+          className="w-20 h-20 rounded-full object-cover shadow"
+        />
         <div>
           <h3 className="text-xl font-bold text-gray-800">{doctor.name}</h3>
           <div className="text-teal-600 text-sm font-medium">{doctor.specialization}</div>
