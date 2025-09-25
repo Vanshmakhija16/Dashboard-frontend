@@ -25,7 +25,7 @@ const DoctorCard = ({ doctor, onBookClick }) => {
   return (
 <div
   className="
-    bg-white border border-gray-200 rounded-2xl p-6 min-h-[120px]
+    bg-black border border-gray-200 rounded-2xl p-6 min-h-[120px]
     flex flex-col space-y-3 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1
     w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl
     mx-auto
