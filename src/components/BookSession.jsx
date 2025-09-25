@@ -26,7 +26,7 @@ const DoctorCard = ({ doctor, onBookClick }) => {
       {/* Image + Name + Specialization in one row */}
       <div className="flex items-center space-x-4 mb-3">
        <img
-  src={`${backend_url}${doctor.profileImage}`}
+  src={`${doctor.profileImage}`}
   alt={doctor.name}
   className="w-20 h-20 rounded-full object-cover shadow"
 />
@@ -326,7 +326,7 @@ export default function BookSession() {
               {/* Doctor Info */}
               <div className="flex items-center space-x-4 mb-5">
                 <img
-  src={`${backend_url}${selectedDoctor.profileImage}`}
+  src={`${selectedDoctor.profileImage}`}
   alt={selectedDoctor.name}
   className="w-16 h-16 rounded-full object-cover border shadow"
 />
