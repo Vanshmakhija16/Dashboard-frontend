@@ -22,15 +22,15 @@ const DoctorCard = ({ doctor, onBookClick }) => {
 
   const badge = getAvailabilityBadge(doctor.availabilityType);
 
-  return (
-<div
+  return (  
+  <div
   className="
-    bg-black border border-gray-200 rounded-2xl p-6 min-h-[120px]
+    bg-white border border-gray-200 rounded-2xl p-6 min-h-[120px]
     flex flex-col space-y-3 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1
-    w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl
+    w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg
     mx-auto
   "
->      {/* Image + Name + Specialization in one row */}
+>{/* Image + Name + Specialization in one row */}
       
       <div className="flex items-center space-x-4 mb-3">
 <img
