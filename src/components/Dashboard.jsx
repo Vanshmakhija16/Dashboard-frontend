@@ -15,11 +15,17 @@ function Sidebar({ isOpen, onClose }) {
     localStorage.removeItem("token");
     window.location.href = "/";
   };
-
+<a
+        href="tel:+9180694640841"
+        className="ml-2 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition shadow-sm"
+      >
+        📞 +9180694640841
+      </a>
   const menuItems = [
     { to: "/profile", label: "Profile", icon: LayoutDashboard },
     { to: "/resources", label: "Resources", icon: BookOpen },
     { to: "/book-session", label: "Session Booking", icon: CalendarDays },
+    {to:"tel:+918959693642", label:"Contact Us" , icon : CalendarDays}
   ];
 
   return (
@@ -70,18 +76,38 @@ function Sidebar({ isOpen, onClose }) {
 // Navbar Component
 function Navbar({ onToggle }) {
   const [studentName, setStudentName] = useState("");
-
+  
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      axios
-        .get(`${backend_url}/api/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => setStudentName(res.data.name))
-        .catch((err) => console.error("Error fetching student:", err));
-    }
-  }, []);
+      const token = localStorage.getItem("token");
+
+      async function fetchData() {
+        try {
+          // ✅ Fetch assigned assessments for logged-in student
+          const res = await axios.get(`${backend_url}/api/assessments/my/${localStorage.getItem("studentId")}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setAssessments(res.data);  // This now has status: "locked" / "unlocked"
+
+          // Keep your existing session fetches...
+          const attendedRes = await axios.get(`${backend_url}/api/appointments/my/attended`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setTotalSessions(attendedRes.data.count);
+
+          const upcomingRes = await axios.get(`${backend_url}/api/appointments/my/upcoming`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setUpcomingSessions(upcomingRes.data.count);
+        } catch (err) {
+          console.error("Error fetching data", err);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      fetchData();
+    }, []);
+
 return(
 <header className="bg-white/50 backdrop-blur-md shadow-sm border-b border-gray-200 sticky top-0 z-40">
   <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -118,10 +144,10 @@ return(
         Book a Session
       </Link>
       <a
-        href="tel:+919571404870"
+        href="tel:+9180694640841"
         className="ml-2 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition shadow-sm"
       >
-        📞 Call Us
+        📞+9180694640841
       </a>
     </nav>
 
@@ -148,16 +174,28 @@ return(
 )
 }
 
-// Main Dashboard Component
+
+
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [assessments, setAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalSessions, setTotalSessions] = useState(0);
   const [upcomingSessions, setUpcomingSessions] = useState(0);
+  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [user, setUser] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser) {
+      setUser(storedUser);
+      if (!storedUser.consentAccepted) {
+        setShowConsentModal(true);
+      }
+    }
+
     const token = localStorage.getItem("token");
 
     async function fetchData() {
@@ -184,70 +222,212 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
+  const handleConsentAccept = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        `${backend_url}/api/auth/consent`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const updatedUser = { ...user, consentAccepted: true };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      setShowConsentModal(false);
+    } catch (err) {
+      console.error("Error updating consent", err);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-teal-50 to-teal-100 text-gray-900 flex">
-      <div className={`flex flex-col flex-1 min-h-screen transition-margin duration-300 ease-in-out ${sidebarOpen ? "mr-72" : "mr-0"}`}>
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-teal-50 to-teal-100 text-gray-900 flex relative">
+      {/* Consent Modal */}
+      {showConsentModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center">
+            <h2 className="text-2xl font-bold mb-4 text-gray-800">Consent Form</h2>
+
+            <div className="mb-6 text-gray-700 max-h-96 overflow-y-scroll p-6 border rounded-xl bg-white shadow-inner">
+              <div className="space-y-4 text-sm leading-relaxed whitespace-pre-wrap">
+                <h2 className="text-lg font-bold text-gray-900">
+                  Terms & Conditions for Counseling Services & Assessments
+                </h2>
+                <p className="text-xs text-gray-500">Last Updated: Sept 24, 2025</p>
+
+                <p>
+                  Welcome to <strong className="text-teal-700 font-bold">Mindery Technologies </strong> We provides access to professional
+                  counseling sessions and psychological assessments delivered by licensed
+                  and qualified Psychologist.
+                </p>
+
+                <p>
+                  By accessing/ using the Platform, booking an appointment, or
+                  participating in any Services,User confirm
+                  that you have read, understood, and agreed to be legally bound by these
+                  Terms & Conditions.
+                </p>
+
+                {/* Section 1 */}
+                <h3 className="font-semibold text-gray-800">1. Scope of Services</h3>
+                <p>1.1 The Platform facilitates booking and provision of professional mental health Services, which may include:</p>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li>Psychological assessments, screenings, and standardized tests.</li>
+                  <li>Individual, group, couple, or family counseling/therapy sessions.</li>
+                  <li>Psychoeducational support, therapeutic interventions, and referrals.</li>
+                </ul>
+                <p>
+                  1.2 The Services are delivered by qualified Clinicians. The Platform
+                  itself does not provide direct medical or psychiatric treatment and shall
+                  not be construed as a healthcare provider.
+                </p>
+                <p>
+                  1.3 The Services are intended for mental health support and
+                  self-improvement purposes only and are not a substitute for psychiatric
+                  hospitalization, emergency intervention, or specialized medical care.
+                </p>
+
+                {/* Section 2 */}
+                <h3 className="font-semibold text-gray-800">2. Eligibility</h3>
+                <p>2.1 Users must be at least 18 years of age to independently access the Services.</p>
+                <p>2.2 Users under the age of 18 may only use the Services with the consent and active involvement of a parent or legal guardian.</p>
+                <p>2.3 By using the Services, you represent and warrant that all information provided is accurate, truthful, and complete.</p>
+
+                {/* Section 3 */}
+                <h3 className="font-semibold text-gray-800">3. Informed Consent</h3>
+                <p>
+                  By booking an appointment, you voluntarily consent to participate in
+                  counseling or assessments with full knowledge of:
+                </p>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li>The nature and purpose of the Services.</li>
+                  <li>The potential risks, benefits, and limitations.</li>
+                  <li>The fact that results or outcomes cannot be guaranteed.</li>
+                </ul>
+                <p>
+                  You have the right to withdraw consent and discontinue Services at any
+                  time, subject to applicable cancellation policies.
+                </p>
+
+                {/* Continue same pattern for sections 4 → 14 */}
+
+                <h3 className="font-semibold text-gray-800">14. Acceptance of Terms</h3>
+                <p>
+                  By proceeding with booking an appointment, creating an account, or
+                  accessing the Services, you acknowledge that you:
+                </p>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li>Have read, understood, and agreed to these Terms & Conditions.</li>
+                  <li>Are of legal age (or have guardian consent, if under 18).</li>
+                  <li>Consent to participate in the Services provided under these terms.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 mb-6">
+              <input type="checkbox" id="consent" required />
+              <label htmlFor="consent" className="text-sm text-gray-700">
+                I agree to the terms and conditions.
+              </label>
+            </div>
+            <button
+              onClick={handleConsentAccept}
+              className="bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700 transition"
+            >
+              Accept and Continue
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Main Dashboard Content (hidden under modal if not accepted) */}
+      <div
+        className={`flex flex-col flex-1 min-h-screen transition-margin duration-300 ease-in-out ${
+          sidebarOpen ? "mr-72" : "mr-0"
+        } ${showConsentModal ? "blur-sm pointer-events-none select-none" : ""}`}
+      >
         <Navbar onToggle={() => setSidebarOpen(true)} />
 
         <main className="p-8 max-w-7xl mx-auto flex-grow">
-          <h2 className="text-3xl font-bold text-gray-800 mb-8 select-none text-center">Welcome to Mindery ✨</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-8 select-none text-center">
+            Welcome to Mindery ✨
+          </h2>
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <div onClick={()=> navigate('/total-sessions')} className="bg-blue-100/40 backdrop-blur-xl rounded-3xl shadow-xl p-6 text-center hover:scale-105 transition transform duration-300">
+              <h1 
+               className="text-lg font-semibold text-gray-700 mb-2 "
+              >Total Sessions</h1>
+              {/* <p className="text-4xl font-extrabold text-indigo-600">{totalSessions}</p> */}
+            </div>
+            <div className="bg-green-100/40 backdrop-blur-xl rounded-3xl shadow-xl p-6 text-center hover:scale-105 transition transform duration-300">
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">Upcoming Sessions</h3>
+              <p className="text-4xl font-extrabold text-green-600">{upcomingSessions}</p>
+            </div>
+            <div className="bg-pink-100/40 backdrop-blur-xl rounded-3xl shadow-xl p-6 text-center hover:scale-105 transition transform duration-300">
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">Leave Balance</h3>
+              <p className="text-4xl font-extrabold text-pink-600">10</p>
+            </div>
+          </div>
 
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-  <div className="bg-blue-100/40 backdrop-blur-xl rounded-3xl shadow-xl p-6 text-center hover:scale-105 transition transform duration-300">
-    <h3 className="text-lg font-semibold text-gray-700 mb-2">Total Sessions</h3>
-    <p className="text-4xl font-extrabold text-indigo-600">{totalSessions}</p>
-  </div>
-  <div className="bg-green-100/40 backdrop-blur-xl rounded-3xl shadow-xl p-6 text-center hover:scale-105 transition transform duration-300">
-    <h3 className="text-lg font-semibold text-gray-700 mb-2">Upcoming Sessions</h3>
-    <p className="text-4xl font-extrabold text-green-600">{upcomingSessions}</p>
-  </div>
-  <div className="bg-pink-100/40 backdrop-blur-xl rounded-3xl shadow-xl p-6 text-center hover:scale-105 transition transform duration-300">
-    <h3 className="text-lg font-semibold text-gray-700 mb-2">Leave Balance</h3>
-    <p className="text-4xl font-extrabold text-pink-600">10</p>
-  </div>
-</div>
+          <section className="bg-yellow-100/40 backdrop-blur-xl rounded-3xl shadow-xl p-10 mb-12 select-text">
+            <h3 className="text-3xl font-bold mb-4 text-gray-800">🧠 Assessments</h3>
+            <p className="text-gray-700 max-w-2xl mx-auto mb-8">
+              Take a quick test to check your mood, personality, and overall well-being.
+            </p>
 
-<section className="bg-yellow-100/40 backdrop-blur-xl rounded-3xl shadow-xl p-10 mb-12 select-text">
-  <h3 className="text-3xl font-bold mb-4 text-gray-800">🧠 Assessments</h3>
-  <p className="text-gray-700 max-w-2xl mx-auto mb-8">
-    Take a quick test to check your mood, personality, and overall well-being.
-  </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+              {loading ? (
+                <div className="col-span-full text-center text-gray-500">
+                  Loading assessments...
+                </div>
+              ) : (
+                assessments.map((a, i) => {
+                  const isUnlocked = a.status === "unlocked";
 
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-    {loading ? (
-      <div className="col-span-full text-center text-gray-500">Loading assessments...</div>
-    ) : (
-      assessments.map((a, i) => (
-        <div
-          key={a.slug}
-          onClick={() => navigate(`/assessments/${a.slug}`)}
-          className={`flex flex-col rounded-3xl p-6 shadow-md cursor-pointer transition transform hover:shadow-2xl hover:scale-[1.03] focus:outline-none focus:ring-4 focus:ring-teal-300 ${
-            i % 3 === 0
-              ? "bg-purple-100/40"
-              : i % 3 === 1
-              ? "bg-teal-100/40"
-              : "bg-orange-100/40"
-          }`}
-          title={`Start ${a.title}`}
-          aria-label={`Start ${a.title}`}
-          tabIndex={0}
-        >
-          <h4 className="text-xl font-semibold text-teal-700 mb-3 text-left">{a.title}</h4>
-          <p className="text-gray-700 flex-grow text-left">{a.description}</p>
-          <span className="mt-6 inline-block text-teal-600 font-semibold hover:underline underline-offset-2">
-            Start →
-          </span>
-        </div>
-      ))
-    )}
-  </div>
-</section>
+                  return (
+                    <div
+                      key={a.slug}
+                      onClick={isUnlocked ? () => navigate(`/assessments/${a.slug}`) : undefined}
+                      className={`flex flex-col rounded-3xl p-6 shadow-md transition transform ${
+                        isUnlocked
+                          ? "cursor-pointer hover:shadow-2xl hover:scale-[1.03] focus:outline-none focus:ring-4 focus:ring-teal-300"
+                          : "opacity-70 cursor-not-allowed"
+                      } ${
+                        i % 3 === 0
+                          ? "bg-purple-100/40"
+                          : i % 3 === 1
+                          ? "bg-teal-100/40"
+                          : "bg-orange-100/40"
+                      }`}
+                      title={isUnlocked ? `Start ${a.title}` : `${a.title} is locked`}
+                      aria-label={isUnlocked ? `Start ${a.title}` : `${a.title} is locked`}
+                      tabIndex={isUnlocked ? 0 : -1}
+                    >
+                      <h4 className="text-xl font-semibold text-teal-700 mb-3 text-left">
+                        {a.title}
+                      </h4>
+                      <p className="text-gray-700 flex-grow text-left">{a.description}</p>
 
+                      {isUnlocked ? (
+                        <span className="mt-6 inline-block text-teal-600 font-semibold hover:underline underline-offset-2">
+                          Start →
+                        </span>
+                      ) : (
+                        <div className="mt-6 flex items-center gap-2 text-gray-500">
+                          <span className="text-lg">🔒</span> Locked
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </section>
 
           <div className="text-center">
             <button
-              onClick={() => navigate("/reports")}
+              onClick={() => navigate("/student-reports")}
               className="bg-gradient-to-r from-indigo-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white px-8 py-3 rounded-2xl shadow-lg font-semibold transition transform hover:scale-105"
             >
               📊 View Reports & Analytics
@@ -259,10 +439,12 @@ export default function Dashboard() {
           <div className="max-w-7xl mx-auto px-6 text-center select-text">
             <h3 className="text-lg font-semibold text-gray-800 mb-3">About Mindery</h3>
             <p className="text-sm max-w-2xl mx-auto">
-              Mindery is your personal learning companion. Our mission is to provide personalized resources, guidance,
-              and session booking to help you grow.
+              Mindery is your personal learning companion. Our mission is to provide personalized
+              resources, guidance, and session booking to help you grow.
             </p>
-            <p className="text-xs text-gray-500 mt-6">&copy; {new Date().getFullYear()} Mindery. All rights reserved.</p>
+            <p className="text-xs text-gray-500 mt-6">
+              &copy; {new Date().getFullYear()} Mindery. All rights reserved.
+            </p>
           </div>
         </footer>
       </div>

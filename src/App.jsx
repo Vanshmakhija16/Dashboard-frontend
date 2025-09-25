@@ -18,8 +18,9 @@ import AssignDoctorsPage from "./components/AssignDoctorsPage";
 import DoctorAppointments from "./components/DoctorAppointments";
 import DoctorApprovedAppointments from "./components/DoctorApprovedAppointments";
 import DoctorRejectedAppointments from "./components/DoctorRejectedAppointments";
-
-// import ReportsAnalytics from "./ReportsAnalytics";
+import Reports from "./components/Reports";
+import ReportDashboard from "./components/ReportDashboard"
+import SessionsSummary from "./components/SessionsSummary";
 
 function App() {
   return (
@@ -157,6 +158,9 @@ function App() {
 
         <Route path="/doctor/approved-appointments" element={<DoctorApprovedAppointments />} />
         <Route path="/doctor/rejected-appointments" element={<DoctorRejectedAppointments />} />
+        <Route path="/reports" element={<Reports />} />
+        <Route path="/student-reports" element={<ReportDashboard />} />
+        <Route path="/total-sessions" element={<SessionsSummary />} />
         
       </Routes>
     </Router>

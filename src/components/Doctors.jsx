@@ -98,43 +98,63 @@ function AppointmentListModal({ doctor, appointments, onClose, onUpdateStatus })
 
 // Doctor Slots Display Component
 function DoctorSlotsDisplay({ doctorSlots }) {
-  if (!doctorSlots || Object.keys(doctorSlots).length === 0) {
-    return <p className="text-sm text-gray-600">No slots available</p>;
+  const dates = Object.keys(doctorSlots || {});
+  const [selectedDate, setSelectedDate] = useState(dates[0] || null);
+
+  if (!doctorSlots || dates.length === 0) {
+    return (
+      <p className="text-sm text-gray-600 italic">No slots available</p>
+    );
   }
 
   return (
-    <div className="mt-4 space-y-3">
-      <h4 className="font-semibold text-gray-800">Available Slots:</h4>
-      <div className="max-h-32 overflow-y-auto space-y-2">
-        {Object.entries(doctorSlots).map(([date, slots]) => (
-          <div key={date} className="bg-gray-50 rounded-lg p-2">
-            <div className="text-sm font-medium text-gray-700 mb-1">
-              {new Date(date).toLocaleDateString('en-US', { 
-                weekday: 'short', 
-                month: 'short', 
-                day: 'numeric' 
-              })}
-            </div>
-            <div className="flex flex-wrap gap-1">
-              {slots && slots.length > 0 ? (
-                slots.map((slot, idx) => (
-                  <span 
-                    key={idx} 
-                    className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
-                  >
-                    {slot.startTime} - {slot.endTime}
-                  </span>
-                ))
-              ) : (
-                <span className="text-xs text-gray-500">No slots</span>
-              )}
-            </div>
-          </div>
-        ))}
+    <div className="mt-4">
+      {/* Date Selector */}
+      <h4 className="text-sm font-semibold text-gray-700 mb-2">Select Date</h4>
+      <div className="flex items-center gap-2 overflow-x-auto pb-2">
+        {dates.map((date) => {
+          const d = new Date(date);
+          const day = d.toLocaleDateString("en-US", { weekday: "short" });
+          const dayNum = d.getDate();
+          return (
+            <button
+              key={date}
+              onClick={() => setSelectedDate(date)}
+              className={`flex flex-col items-center px-3 py-2 rounded-lg border text-sm font-medium transition ${
+                selectedDate === date
+                  ? "bg-teal-600 text-white border-teal-600"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-teal-50"
+              }`}
+            >
+              <span>{day}</span>
+              <span>{dayNum}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Slots for Selected Date */}
+      <h4 className="text-sm font-semibold text-gray-700 mt-4 mb-2">Available Slots</h4>
+      <div className="flex flex-wrap gap-2">
+        {doctorSlots[selectedDate] && doctorSlots[selectedDate].length > 0 ? (
+          doctorSlots[selectedDate].map((slot, idx) => (
+            <span
+              key={idx}
+              className="px-4 py-2 rounded-lg text-sm font-medium border bg-white text-gray-700 border-gray-300 hover:bg-teal-50"
+            >
+              {slot.startTime} - {slot.endTime}
+            </span>
+          ))
+        ) : (
+          <span className="text-xs text-gray-500 italic">
+            No slots available for this day.
+          </span>
+        )}
       </div>
     </div>
   );
 }
+
 
 export default function Doctors() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -273,47 +293,58 @@ const handleSubmit = async (e) => {
       return;
     }
 
-    const payload = {
-      name: form.name.trim(),
-      specialization: form.specialization.trim(),
-      email: form.email.trim(),
-      phone: form.phone?.trim() || undefined,
-      availabilityType: ["online", "offline", "both"].includes(form.availability)
-        ? form.availability
-        : "both",
-      isAvailable: form.isAvailable // ✅ include availability status
-    };
+    // Prepare FormData for file + fields
+    const formData = new FormData();
+    formData.append("name", form.name.trim());
+    formData.append("specialization", form.specialization.trim());
+    formData.append("email", form.email.trim());
+    if (form.phone?.trim()) formData.append("phone", form.phone.trim());
+    formData.append(
+      "availabilityType",
+      ["online", "offline", "both"].includes(form.availability) ? form.availability : "both"
+    );
+    formData.append("isAvailable", form.isAvailable);
+
+    // ✅ Append arrays/objects as JSON strings
+    if (form.weeklySchedule) {
+      formData.append("weeklySchedule", JSON.stringify(form.weeklySchedule));
+    }
+    if (form.todaySchedule) {
+      formData.append("todaySchedule", JSON.stringify(form.todaySchedule));
+    }
+    if (form.universities) {
+      formData.append("universities", JSON.stringify(form.universities));
+    }
+
+    // ✅ Append image if selected
+    if (form.imageFile) {
+      formData.append("profileImage", form.imageFile);// 👈 must match upload.single("profileImage")
+    }
 
     // Determine slots to send based on availability
     const slotsToSave = form.isAvailable === "available" ? dateSlots : {};
 
     if (editingId) {
-      // Update existing doctor
-      await axios.put(
-        `${backend_url}/api/doctors/${editingId}`,
-        payload,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      // Update existing doctor (PUT with FormData)
+      await axios.put(`${backend_url}/api/doctors/${editingId}`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      // ✅ Update all date slots and send isAvailable
+      // ✅ Update all date slots and availability
       await axios.patch(
         `${backend_url}/api/doctors/${editingId}/all-slots`,
         { dateSlots: slotsToSave, isAvailable: form.isAvailable },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      // alert("Doctor updated successfully");
     } else {
       // Create new doctor
-      const res = await axios.post(
-        `${backend_url}/api/doctors`,
-        payload,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await axios.post(`${backend_url}/api/doctors`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       const doctorId = res.data.data?._id;
 
-      // ✅ Save all date slots and send isAvailable
+      // ✅ Save all date slots and availability
       if (doctorId) {
         await axios.patch(
           `${backend_url}/api/doctors/${doctorId}/all-slots`,
@@ -322,7 +353,13 @@ const handleSubmit = async (e) => {
         );
       }
 
-      alert(`Doctor added! Temporary password: ${res.data.generatedPassword || res.data.data?.generatedPassword || "check response"}`);
+      alert(
+        `Doctor added! Temporary password: ${
+          res.data.generatedPassword ||
+          res.data.data?.generatedPassword ||
+          "check response"
+        }`
+      );
     }
 
     // Reset form
@@ -333,7 +370,11 @@ const handleSubmit = async (e) => {
       phone: "",
       availability: "online",
       isAvailable: "available",
-      selectedDay: ""
+      selectedDay: "",
+      weeklySchedule: [],
+      todaySchedule: null,
+      universities: [],
+      imageFile: null,
     });
     setDateSlots({});
     setCurrentSlots([]);
@@ -343,12 +384,13 @@ const handleSubmit = async (e) => {
     setAddingNew(false);
     setEditingId(null);
     fetchDoctors();
-
   } catch (err) {
     console.error("Error saving doctor:", err.response?.data || err.message);
     alert(err.response?.data?.message || "Error saving doctor");
   }
 };
+
+
 
 
 
@@ -457,6 +499,23 @@ const handleSubmit = async (e) => {
                 <input className="w-full p-2 border rounded focus:ring-2 focus:ring-indigo-500" name="specialization" placeholder="Specialization" value={form.specialization} onChange={handleChange} required />
                 <input className="w-full p-2 border rounded focus:ring-2 focus:ring-indigo-500" name="email" placeholder="Email" value={form.email} onChange={handleChange} required />
                 <input className="w-full p-2 border rounded focus:ring-2 focus:ring-indigo-500" name="phone" placeholder="Phone" value={form.phone} onChange={handleChange} />
+             <input 
+                type="file" 
+                accept="image/*" 
+                onChange={(e) => setForm({ ...form, imageFile: e.target.files[0] })} 
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-indigo-500"
+              />
+
+{/* Preview if selected */}
+{form.imageFile && (
+  <img 
+    src={URL.createObjectURL(form.imageFile)} 
+    alt="Preview" 
+    className="w-20 h-20 rounded-full object-cover mt-2"
+  />
+)}
+
+
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -697,37 +756,83 @@ const handleSubmit = async (e) => {
         )}
 
         {/* Doctor List */}
-        <div className="relative px-4 flex flex-col gap-6">
-          {doctors.map((doc) => (
-            <div key={doc._id} className="relative bg-white/30 backdrop-blur-md rounded-2xl shadow-lg p-5 hover:shadow-2xl transition max-w-2xl mx-auto w-full">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-indigo-700">{doc.name}</h3>
-                  <p className="text-sm text-gray-700">{doc.specialization}</p>
-                  <p className="text-sm text-gray-800">Email: {doc.email}</p>
-                  <p className="text-sm text-gray-800">Phone: {doc.phone}</p>
-                  <p className="text-sm text-gray-800">
-                    Availability: <span className="capitalize font-medium">{doc.availabilityType || doc.availability}</span>
-                  </p>
-                </div>
-                <div className="flex gap-2 flex-wrap">
-                  <button onClick={() => openAppointments(doc)} className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition text-sm">
-                    Appointments
-                  </button>
-                  <button onClick={() => handleEdit(doc)} className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition text-sm">
-                    Edit
-                  </button>
-                  <button onClick={() => handleDelete(doc._id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition text-sm">
-                    Delete
-                  </button>
-                </div>
-              </div>
-              
-              {/* Display doctor's available slots */}
-                <DoctorSlotsDisplay doctorSlots={doc.isAvailable === "available" ? (doc.slots || doc.dateSlots) : {}} />
-            </div>
-          ))}
+<div className="relative px-4 flex flex-col gap-6">
+  {doctors.map((doc) => (
+    <div 
+      key={doc._id} 
+      className="relative bg-white/40 backdrop-blur-lg rounded-2xl shadow-lg p-6 hover:shadow-2xl transition max-w-3xl mx-auto w-full"
+    >
+      {/* Wrapper: Left (image) + Right (content) */}
+      <div className="flex flex-row items-start gap-6">
+        
+        {/* Left: Profile Image */}
+        {doc.imageUrl && (
+          <div className="flex-shrink-0">
+            <img
+              src={`${backend_url}${doc.imageUrl}`}
+              alt={doc.name}
+              className="w-40 h-80 mt-auto rounded-2xl object-cover shadow-md"
+            />
+          </div>
+        )}
+
+        {/* Right: Info + Actions */}
+        <div className="flex-1 flex flex-col justify-between">
+          {/* Name + Details */}
+          <div className="mb-4">
+            <h3 className="text-2xl font-extrabold text-indigo-800 tracking-wide">
+              {doc.name}
+            </h3>
+            <p className="text-base text-gray-700 font-medium">{doc.specialization}</p>
+            <p className="text-sm text-gray-600 mt-1">
+              <span className="font-semibold">Email:</span> {doc.email}
+            </p>
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Phone:</span> {doc.phone}
+            </p>
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Availability:</span>{" "}
+              <span className="capitalize text-green-700 font-semibold">
+                {doc.availabilityType || doc.availability}
+              </span>
+            </p>
+          </div>
+
+          {/* Buttons */}
+          <div className="flex gap-3 flex-wrap mb-4">
+            <button
+              onClick={() => openAppointments(doc)}
+              className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition text-sm font-semibold shadow"
+            >
+              Appointments
+            </button>
+            <button
+              onClick={() => handleEdit(doc)}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition text-sm font-semibold shadow"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => handleDelete(doc._id)}
+              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition text-sm font-semibold shadow"
+            >
+              Delete
+            </button>
+          </div>
+
+          {/* Slots Box */}
+          <div className="bg-gray-100  px-5 py-2 rounded-xl shadow-inner">
+              <DoctorSlotsDisplay
+              doctorSlots={doc.isAvailable === "available" ? (doc.slots || doc.dateSlots) : {}}
+            />
+          </div>
         </div>
+      </div>
+    </div>
+  ))}
+</div>
+
+
       </div>
 
       {/* Appointment Modal */}
