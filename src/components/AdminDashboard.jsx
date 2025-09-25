@@ -167,7 +167,7 @@ export default function AdminDashboard() {
 
           {/* Appointments */}
           <div
-            onClick={() => navigate("/admin/appointments")}
+            // onClick={() => navigate("/admin/appointments")}
             className="bg-gradient-to-br from-pink-100 to-pink-200 rounded-2xl shadow-lg p-6 text-center hover:scale-105 transition transform duration-300 cursor-pointer"
           >
             <CalendarDays size={48} className="text-green-600 mx-auto" />

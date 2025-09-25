@@ -163,26 +163,60 @@ export default function UniversitiesPage() {
             ) : universities.length === 0 ? (
               <p className="text-center text-gray-400 text-lg py-12 animate-fadein">No universities found.</p>
             ) : (
-              <ul className="flex flex-col gap-5">
-                {universities.map((uni, i) => (
-                  <li key={uni._id} className={`flex justify-between items-center border border-teal-00 bg-white/70 backdrop-blur-[6px] p-5 rounded-xl shadow-[0_3px_18px_0px_rgba(20,184,166,0.11)] hover:shadow-xl hover:bg-teal-50 transition-all duration-300 group animate-listpop`} style={{ animationDelay: `${i * 80}ms` }}>
-                    <div>
-                      <span className="text-xl font-semibold text-emerald-800 hover:text-teal-500 cursor-pointer transition duration-200" title="View Students" onClick={() => navigate(`/universities/${uni._id}/students`)}>
-                        {uni.name}
+            <ul className="flex flex-col gap-5">
+              {universities.map((uni, i) => (
+                <li
+                  key={uni._id}
+                  onClick={() => navigate(`/universities/${uni._id}/students`)}
+                  className={`flex justify-between items-center border border-teal-00 bg-white/70 backdrop-blur-[6px] p-5 rounded-xl shadow-[0_3px_18px_0px_rgba(20,184,166,0.11)] hover:shadow-xl hover:bg-teal-50 transition-all duration-300 group animate-listpop cursor-pointer`}
+                  style={{ animationDelay: `${i * 80}ms` }}
+                >
+                  <div>
+                    <span
+                      className="text-xl font-semibold text-emerald-800 group-hover:text-teal-500 transition duration-200"
+                      title="View Students"
+                    >
+                      {uni.name}
+                    </span>
+                    {uni.adminName && (
+                      <span className="ml-3 text-gray-600 text-sm">
+                        (Admin: {uni.adminName})
                       </span>
-                      {uni.adminName && <span className="ml-3 text-gray-600 text-sm">(Admin: {uni.adminName})</span>}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => handleAssignDoctors(uni._id)} className="p-2 rounded-xl bg-gradient-to-tr from-blue-400 via-cyan-400 to-teal-500 text-white shadow-md hover:scale-110 transition" title="Assign Doctors">
-                        <UserPlus size={20} />
-                      </button>
-                      <button onClick={() => handleDeleteUniversity(uni._id)} disabled={deletingId === uni._id} className={`p-2 rounded-xl shadow-md transition-all duration-200 ease-in ${deletingId === uni._id ? "bg-orange-200 text-white cursor-wait" : "bg-gradient-to-tr from-orange-400 via-pink-400 to-pink-500 text-white hover:scale-110 hover:brightness-105"}`} title="Delete University">
-                        <Trash2 size={20} />
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); // ✅ Prevent navigation
+                        handleAssignDoctors(uni._id);
+                      }}
+                      className="p-2 rounded-xl bg-gradient-to-tr from-blue-400 via-cyan-400 to-teal-500 text-white shadow-md hover:scale-110 transition"
+                      title="Assign Doctors"
+                    >
+                      <UserPlus size={20} />
+                    </button>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); // ✅ Prevent navigation
+                        handleDeleteUniversity(uni._id);
+                      }}
+                      disabled={deletingId === uni._id}
+                      className={`p-2 rounded-xl shadow-md transition-all duration-200 ease-in ${
+                        deletingId === uni._id
+                          ? "bg-orange-200 text-white cursor-wait"
+                          : "bg-gradient-to-tr from-orange-400 via-pink-400 to-pink-500 text-white hover:scale-110 hover:brightness-105"
+                      }`}
+                      title="Delete University"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
             )}
           </div>
         </div>
