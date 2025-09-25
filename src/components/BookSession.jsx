@@ -28,12 +28,15 @@ const DoctorCard = ({ doctor, onBookClick }) => {
 <img
   src={
     doctor.profileImage
-      ? `${backend_url}/uploads/${doctor.profileImage}`
+      ? doctor.profileImage.startsWith("http")
+        ? doctor.profileImage
+        : `${backend_url}${doctor.profileImage}`
       : "/default-doctor.png"
   }
   alt={doctor.name}
   className="w-20 h-20 rounded-full object-cover shadow"
 />
+
 
         <div>
           <h3 className="text-xl font-bold text-gray-800">{doctor.name}</h3>
@@ -332,12 +335,15 @@ export default function BookSession() {
 <img
   src={
     selectedDoctor.profileImage
-      ? `${backend_url}/uploads/${selectedDoctor.profileImage}`
+      ? selectedDoctor.profileImage.startsWith("http")
+        ? selectedDoctor.profileImage
+        : `${backend_url}${selectedDoctor.profileImage}`
       : "/default-doctor.png"
   }
   alt={selectedDoctor.name}
   className="w-16 h-16 rounded-full object-cover border shadow"
 />
+
 
                 <h2 className="text-2xl font-bold text-teal-700">
                   Book Session with {selectedDoctor.name}
