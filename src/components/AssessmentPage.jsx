@@ -14,24 +14,25 @@ export default function AssessmentPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [locked, setLocked] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0); // ✅ track current question index
 
   useEffect(() => {
     let mounted = true;
     async function fetchAssessment() {
       try {
-        // ✅ Fetch assessment data
         const res = await axios.get(`${backend_url}/api/assessments/${slug}`);
         if (!mounted) return;
 
         setAssessment(res.data);
 
-        // ✅ Also check lock/unlock status from backend
-        const studentId = localStorage.getItem("studentId"); // assumes login sets this
+        const studentId = localStorage.getItem("studentId");
         if (studentId) {
           const statusRes = await axios.get(
             `${backend_url}/api/assessments/my/${studentId}`
           );
-          const assigned = statusRes.data.find((a) => a.assessmentId === res.data.id);
+          const assigned = statusRes.data.find(
+            (a) => a.assessmentId === res.data.id
+          );
           if (assigned && assigned.status === "locked") {
             setLocked(true);
           }
@@ -51,10 +52,21 @@ export default function AssessmentPage() {
     setAnswers((prev) => ({ ...prev, [qid]: value }));
   };
 
+  const handleNext = () => {
+    if (currentIndex < assessment.questions.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex((prev) => prev - 1);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!assessment) return;
 
-    // Check if all questions are answered
     const unanswered = assessment.questions.filter((q) => !answers[q.id]);
     if (unanswered.length > 0) {
       alert(`Please answer all ${assessment.questions.length} questions.`);
@@ -77,9 +89,9 @@ export default function AssessmentPage() {
   };
 
   if (loading) return <div className="p-6">Loading assessment...</div>;
-  if (!assessment) return <div className="p-6 text-red-600">Assessment not found</div>;
+  if (!assessment)
+    return <div className="p-6 text-red-600">Assessment not found</div>;
 
-  // ✅ If locked → show lock screen
   if (locked) {
     return (
       <div className="p-6 max-w-2xl mx-auto text-center">
@@ -119,21 +131,26 @@ export default function AssessmentPage() {
         </div>
       ) : (
         <>
-          {assessment.questions.map((q, i) => (
-            <div key={q.id} className="mb-6 p-4 border rounded-xl shadow-sm">
+          {/* ✅ Show only current question */}
+          {assessment.questions.length > 0 && (
+            <div className="mb-6 p-4 border rounded-xl shadow-sm">
               <p className="font-semibold mb-3">
-                {i + 1}. {q.text}
+                {currentIndex + 1}. {assessment.questions[currentIndex].text}
               </p>
 
-              {q.options?.length > 0 ? (
-                q.options.map((opt) => (
+              {assessment.questions[currentIndex].options?.length > 0 ? (
+                assessment.questions[currentIndex].options.map((opt) => (
                   <label key={opt} className="block mb-2 cursor-pointer">
                     <input
                       type="radio"
-                      name={q.id}
+                      name={assessment.questions[currentIndex].id}
                       value={opt}
-                      checked={answers[q.id] === opt}
-                      onChange={() => handleAnswer(q.id, opt)}
+                      checked={
+                        answers[assessment.questions[currentIndex].id] === opt
+                      }
+                      onChange={() =>
+                        handleAnswer(assessment.questions[currentIndex].id, opt)
+                      }
                       className="mr-2"
                     />
                     {opt}
@@ -142,21 +159,47 @@ export default function AssessmentPage() {
               ) : (
                 <input
                   type="text"
-                  value={answers[q.id] || ""}
-                  onChange={(e) => handleAnswer(q.id, e.target.value)}
+                  value={answers[assessment.questions[currentIndex].id] || ""}
+                  onChange={(e) =>
+                    handleAnswer(
+                      assessment.questions[currentIndex].id,
+                      e.target.value
+                    )
+                  }
                   className="border p-2 w-full rounded"
                 />
               )}
             </div>
-          ))}
+          )}
 
-          <button
-            onClick={handleSubmit}
-            disabled={submitting}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-lg"
-          >
-            {submitting ? "Submitting..." : "Submit"}
-          </button>
+          {/* ✅ Navigation buttons */}
+          <div className="flex justify-between mt-4">
+            {currentIndex > 0 && (
+              <button
+                onClick={handlePrevious}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-xl"
+              >
+                Previous
+              </button>
+            )}
+
+            {currentIndex < assessment.questions.length - 1 ? (
+              <button
+                onClick={handleNext}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl ml-auto"
+              >
+                Next
+              </button>
+            ) : (
+              <button
+                onClick={handleSubmit}
+                disabled={submitting}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl ml-auto"
+              >
+                {submitting ? "Submitting..." : "Submit"}
+              </button>
+            )}
+          </div>
         </>
       )}
     </div>
