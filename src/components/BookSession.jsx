@@ -93,7 +93,8 @@ const DoctorCard = ({ doctor, onBookClick }) => {
   </button>
 </div>
 
-
+);
+};
 // -----------------------------
 // Main BookSession Component
 // -----------------------------
