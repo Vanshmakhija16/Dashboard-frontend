@@ -95,7 +95,7 @@ export default function AssessmentPage() {
         {report ? (
           <div className="p-6 border rounded-2xl bg-gradient-to-r from-green-50 to-green-100 shadow-md text-center">
             <h2 className="text-2xl font-bold text-green-700 mb-4">
-              🎉 Your Results
+             Your Results
             </h2>
             <p className="text-5xl font-extrabold text-green-600 mb-2">
               {report.score}

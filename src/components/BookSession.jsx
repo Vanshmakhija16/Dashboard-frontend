@@ -18,7 +18,6 @@ const DoctorCard = ({ doctor, onBookClick }) => {
     };
     return badges[type] || badges.both;
   };
- console.log("Doctor Image path:", doctor.profileImage);
 
   const badge = getAvailabilityBadge(doctor.availabilityType);
 
