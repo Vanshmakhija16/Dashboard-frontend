@@ -22,6 +22,7 @@ import Reports from "./components/Reports";
 import ReportDashboard from "./components/ReportDashboard"
 import SessionsSummary from "./components/SessionsSummary";
 import Profile from "./components/Profile"
+import Resource from "./components/Resources";
 function App() {
   return (
     <Router>
@@ -169,6 +170,7 @@ function App() {
         <Route path="/reports" element={<Reports />} />
         <Route path="/student-reports" element={<ReportDashboard />} />
         <Route path="/total-sessions" element={<SessionsSummary />} />
+        <Route path="/resources" element={<Resource />} />
         
       </Routes>
     </Router>
