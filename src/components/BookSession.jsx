@@ -21,49 +21,79 @@ const DoctorCard = ({ doctor, onBookClick }) => {
 
   const badge = getAvailabilityBadge(doctor.availabilityType);
 
-  return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-6 min-h-[120px] flex flex-col space-y-3 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-      {/* Image + Name + Specialization in one row */}
-      
-      <div className="flex items-center space-x-4 mb-3">
-<img
-  src={
-    doctor.profileImage?.startsWith("http")
-      ? doctor.profileImage
-      : `${backend_url}${doctor.profileImage}`
-  }
-  alt={doctor.name}
-  className="w-20 h-20 rounded-full object-cover shadow"
-/>
+  return (  
+<div
+  className="
+    bg-white border border-gray-200 rounded-2xl 
+    p-4 sm:p-6   /* smaller padding on mobile, bigger on desktop */
+    min-h-[120px]
+    flex flex-col space-y-3 
+    shadow-md hover:shadow-xl 
+    transition-all duration-300 transform hover:-translate-y-1
+    w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg
+    mx-auto
+  "
+>
+  {/* Image + Name + Specialization in one row */}
+  <div className="flex items-center space-x-3 sm:space-x-4 mb-3">
+    <img
+      src={
+        doctor.profileImage?.startsWith("http")
+          ? doctor.profileImage
+          : `${backend_url}${doctor.profileImage}`
+      }
+      alt={doctor.name}
+      className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover shadow"
+    />
 
-
-        <div>
-          <h3 className="text-xl font-bold text-gray-800">{doctor.name}</h3>
-          <div className="text-teal-600 text-sm font-medium">{doctor.specialization}</div>
-          {doctor.hospital && <p className="text-gray-600 text-sm">{doctor.hospital}</p>}
-        </div>
+    <div className="flex-1 min-w-0">
+      <h3 className="text-base sm:text-xl font-bold text-gray-800 truncate">
+        {doctor.name}
+      </h3>
+      <div className="text-teal-600 text-xs sm:text-sm font-medium break-words">
+        {doctor.specialization}
       </div>
-
-      {/* Availability Badge */}
-      <div className="flex justify-between items-center">
-        <p className="text-sm font-medium text-blue-700">📅 Available for Booking</p>
-        <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${badge.color}`}>
-          {badge.text}
-        </span>
-      </div>
-
-      {/* Book button */}
-      <button
-        className="mt-4 py-2 font-semibold rounded-lg transition-colors bg-teal-700 hover:bg-teal-800 text-white disabled:bg-gray-400 disabled:cursor-not-allowed"
-        onClick={() => onBookClick(doctor)}
-        disabled={doctor.isAvailable !== "available"}
-      >
-        {doctor.isAvailable === "available" ? "Book Appointment" : "Not Available"}
-      </button>
+      {doctor.hospital && (
+        <p className="text-gray-600 text-xs sm:text-sm break-words">
+          {doctor.hospital}
+        </p>
+      )}
     </div>
-  );
-};
+  </div>
 
+  {/* Availability Badge */}
+  <div className="flex flex-wrap justify-between items-center gap-2">
+    <p className="text-xs sm:text-sm font-medium text-blue-700">
+      📅 Available for Booking
+    </p>
+    <span
+      className={`text-xs sm:text-sm font-semibold px-2.5 py-0.5 rounded-full ${badge.color}`}
+    >
+      {badge.text}
+    </span>
+  </div>
+
+  {/* Book button */}
+  <button
+    className="
+      mt-4 py-2 px-3 sm:px-4 
+      text-sm sm:text-base 
+      font-semibold rounded-lg 
+      transition-colors 
+      bg-teal-700 hover:bg-teal-800 text-white 
+      disabled:bg-gray-400 disabled:cursor-not-allowed
+    "
+    onClick={() => onBookClick(doctor)}
+    disabled={doctor.isAvailable !== "available"}
+  >
+    {doctor.isAvailable === "available"
+      ? "Book Appointment"
+      : "Not Available"}
+  </button>
+</div>
+
+);
+};
 // -----------------------------
 // Main BookSession Component
 // -----------------------------
