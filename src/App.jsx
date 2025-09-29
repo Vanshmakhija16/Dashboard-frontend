@@ -21,7 +21,7 @@ import DoctorRejectedAppointments from "./components/DoctorRejectedAppointments"
 import Reports from "./components/Reports";
 import ReportDashboard from "./components/ReportDashboard"
 import SessionsSummary from "./components/SessionsSummary";
-
+import Profile from "./components/Profile"
 function App() {
   return (
     <Router>
@@ -35,6 +35,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["student"]}>
               <BookSession />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute allowedRoles={["student"]}>
+              <Profile />
             </ProtectedRoute>
           }
         />

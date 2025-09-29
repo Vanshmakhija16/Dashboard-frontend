@@ -137,6 +137,12 @@ return(
       >
         Home
       </Link>
+      <Link
+        to="/profile"
+        className="px-4 py-2 rounded-full hover:text-indigo-600 transition "
+      >
+        Profile
+      </Link>
       <Link to="/resources" className="hover:text-indigo-600 transition">
         Resources
       </Link>
