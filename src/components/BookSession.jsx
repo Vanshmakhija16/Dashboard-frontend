@@ -191,39 +191,47 @@ export default function BookSession() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!selectedDoctor || !form.date || !form.slot) {
-      setMessage("❌ Please select a date and slot");
-      return;
-    }
+  if (!selectedDoctor || !form.date || !form.slot) {
+    setMessage("❌ Please select a date and slot");
+    return;
+  }
 
-    try {
-      const [startTimeStr, endTimeStr] = form.slot.split("|");
-      const slotStart = new Date(`${form.date}T${startTimeStr}:00`).toISOString();
-      const slotEnd = new Date(`${form.date}T${endTimeStr}:00`).toISOString();
+  try {
+    const [startTimeStr, endTimeStr] = form.slot.split("|");
+    const slotStart = new Date(`${form.date}T${startTimeStr}:00`).toISOString();
+    const slotEnd = new Date(`${form.date}T${endTimeStr}:00`).toISOString();
 
-      await axios.post(
-        `${backend_url}/api/sessions`,
-        {
-          doctorId: selectedDoctor._id,
-          slotStart,
-          slotEnd,
-          notes: form.notes,
-          mode: form.mode.toLowerCase(),
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
+    await axios.post(
+      `${backend_url}/api/sessions`,
+      {
+        doctorId: selectedDoctor._id,
+        slotStart,
+        slotEnd,
+        notes: form.notes,
+        mode: form.mode.toLowerCase(),
+      },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    setMessage("✅ Session booked successfully!");
+    setModalOpen(false);
+  } catch (err) {
+    console.error("Booking error:", err.response?.data || err.message);
+
+    // preserve your original message, but add error info for debugging
+    if (err.response?.status === 400 && err.response?.data?.error) {
+      setMessage(`❌ ${err.response.data.error}`);
+    } else {
+      setMessage(
+        `❌ You can book only 'two' session per day.\nTry again tomorrow after 9AM.`
       );
-
-      setMessage("✅ Session booked successfully!");
-      setModalOpen(false);
-    } catch (err) {
-      console.log(err.response?.data || err.message);
-      setMessage(`❌You can book only 'two' session per day.
-      Try again tomorrow after 9AM.`);
     }
-  };
+  }
+};
+
 
   const handleLogout = () => {
     localStorage.removeItem("token");
