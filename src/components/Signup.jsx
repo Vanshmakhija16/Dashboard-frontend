@@ -7,6 +7,8 @@ const backend_url = import.meta.env.VITE_API_BASE_URL;
 
 export default function Signup() {
   const [isSignup, setIsSignup] = useState(true);
+  const [loading, setLoading] = useState(false);
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -36,6 +38,8 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+      setLoading(true); // start loader
+
     try {
       const url = isSignup
         ? `${backend_url}/api/auth/signup`
@@ -69,7 +73,11 @@ export default function Signup() {
       } else {
         alert("Something went wrong. Please try again.");
       }
+      
     }
+    finally {
+    setLoading(false); // stop loader
+  }
   };
 
   return (
@@ -198,15 +206,32 @@ export default function Signup() {
             </button>
           </form>
 
-          <p className="text-center text-gray-700 text-sm">
-            {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
-            <button
-              onClick={() => setIsSignup(!isSignup)}
-              className="text-teal-600 font-semibold hover:underline"
-            >
-              {isSignup ? "Login" : "Sign Up"}
-            </button>
-          </p>
+<p className="text-center text-gray-700 text-sm">
+  {isSignup ? (
+    <>
+      Already have an account?{" "}
+      <button
+        type="button"
+        onClick={() => setIsSignup(false)}
+        className="text-teal-600 font-semibold hover:underline"
+      >
+        Login
+      </button>
+    </>
+  ) : (
+    <>
+      Don&apos;t have an account?{" "}
+      <button
+        type="button"
+        onClick={() => setIsSignup(true)}
+        className="text-teal-600 font-semibold hover:underline"
+      >
+        Sign Up
+      </button>
+    </>
+  )}
+</p>
+
         </div>
       </div>
     </div>

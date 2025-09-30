@@ -114,15 +114,13 @@ export default function DoctorSessions() {
   };
 
   const SessionCard = ({ session }) => (
-    <article className="bg-white rounded-xl shadow-lg p-6 border border-indigo-200 mb-4 hover:scale-100 transform transition-all duration-200">
+    <article className="bg-white rounded-4xl w-[50%]  m-auto shadow-lg p-6 border  border-indigo-200 mb-4 hover:scale-100 transform transition-all duration-200">
       <header className="flex justify-between items-center mb-4">
         <div>
           <h3 className="font-extrabold text-xl text-indigo-900">
             {session.patientName || session.student?.name || "Unknown Student"}
           </h3>
-          <p className="text-sm text-indigo-500 mt-1 select-text">
-            {session.mobile || session.student?.mobile || "-"}
-          </p>
+
         </div>
         <span
           className={`text-xs px-3 py-1 rounded-full font-semibold tracking-wider ${
@@ -283,9 +281,9 @@ export default function DoctorSessions() {
           <>
             {/* Upcoming Sessions */}
             <section>
-              <h2 className="text-2xl font-bold mb-4">Upcoming Sessions</h2>
+              <h2 className="text-2xl font-bold text-center mb-4">Upcoming Sessions</h2>
               {filterSessions(upcomingSessions).length === 0 ? (
-                <p>No upcoming sessions</p>
+                <p className="text-center" >No upcoming sessions</p>
               ) : (
                 filterSessions(upcomingSessions).map((s) => (
                   <SessionCard key={s._id} session={s} />
@@ -295,9 +293,9 @@ export default function DoctorSessions() {
 
             {/* History */}
             <section className="mt-12">
-              <h2 className="text-2xl font-bold mb-4">History</h2>
+              <h2 className="text-2xl font-bold text-center mb-4">History</h2>
               {filterSessions(historySessions).length === 0 ? (
-                <p>No past sessions</p>
+                <p className="text-center" >No past sessions</p>
               ) : (
                 filterSessions(historySessions).map((s) => (
                   <SessionCard key={s._id} session={s} />

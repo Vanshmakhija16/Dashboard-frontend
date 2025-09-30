@@ -338,7 +338,7 @@ export default function BookSession() {
 
         <section className="space-y-7 animate-fade-in w-[55%] m-auto">
           {displayedDoctors.length === 0 ? (
-            <p className="text-center text-gray-400 text-lg mt-16">No doctors available.</p>
+            <p className="text-center text-gray-400 text-lg mt-16">Loading...</p>
           ) : (
             displayedDoctors.map((doctor) => (
               <DoctorCard key={doctor._id} doctor={doctor} onBookClick={handleBookClick} />
