@@ -228,23 +228,29 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  const handleConsentAccept = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        `${backend_url}/api/auth/consent`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+const handleConsentAccept = async () => {
+  try {
+    const token = localStorage.getItem("token");
 
-      const updatedUser = { ...user, consentAccepted: true };
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      setUser(updatedUser);
-      setShowConsentModal(false);
-    } catch (err) {
-      console.error("Error updating consent", err);
-    }
-  };
+    await axios.post(
+      `${backend_url}/api/auth/consent`,
+      { consentAccepted: true }, // ✅ send required field
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const updatedUser = { ...user, consentAccepted: true };
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    setUser(updatedUser);
+    setShowConsentModal(false);
+  } catch (err) {
+    console.error("Error updating consent", err.response?.data || err.message);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-teal-50 to-teal-100 text-gray-900 flex relative">
