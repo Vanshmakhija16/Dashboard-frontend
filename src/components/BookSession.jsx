@@ -1260,6 +1260,7 @@ export default function BookSession() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true)
 
     if (!selectedDoctor || !form.date || !form.slot) {
       setMessage("❌ Please select a doctor, date, and time slot");
@@ -1601,14 +1602,18 @@ export default function BookSession() {
                     Cancel
                   </button>
                   <button
-                    type="submit"
-                    className="px-4 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 shadow-md transition-colors transform hover:scale-105"
-                  >
-
-                    Book
-                    <LuLoaderCircle className="animate-spin" />
-
-                  </button>
+      type="submit"
+      onClick={handleBook}
+      disabled={loading}
+      className={`flex items-center justify-center px-4 py-2 rounded-lg bg-teal-600 text-white shadow-md transition-transform hover:scale-105 ${
+        loading ? "opacity-70 cursor-not-allowed" : "hover:bg-teal-700"
+      }`}
+    >
+      {loading ? (
+        <LuLoaderCircle className="animate-spin mr-2" size={20} />
+      ) : null}
+      {loading ? "Booking..." : "Book"}
+    </button>
                 </div>
 
                 {message && <p className="mt-2 text-sm text-center font-medium">{message}</p>}
