@@ -1067,6 +1067,8 @@ import { Menu, X, CalendarDays, Clock, ChevronLeft, ChevronRight } from "lucide-
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import minderyLogo from "../assets/mindery.png";
+import { LuLoaderCircle } from "react-icons/lu";
+
 
 const backend_url = import.meta.env.VITE_API_BASE_URL;
 
@@ -1169,6 +1171,7 @@ export default function BookSession() {
   const [form, setForm] = useState({ date: "", slot: "", notes: "", mode: "online" });
   const [message, setMessage] = useState("");
   const [availableDates, setAvailableDates] = useState([]); // [{date, slots}, ...]
+  const [loader,setLoader] = useState(false);
 
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -1465,10 +1468,12 @@ export default function BookSession() {
                   alt={selectedDoctor.name}
                   className="w-16 h-16 rounded-full object-cover border shadow"
                 />
-                <h2 className="text-2xl font-bold text-teal-700">
+                <h2  className="text-2xl font-bold text-teal-700">
                   Book Session with {selectedDoctor.name}
                 </h2>
               </div>
+
+
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Date Picker */}
@@ -1599,7 +1604,10 @@ export default function BookSession() {
                     type="submit"
                     className="px-4 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 shadow-md transition-colors transform hover:scale-105"
                   >
+
                     Book
+                    <LuLoaderCircle className="animate-spin" />
+
                   </button>
                 </div>
 
