@@ -506,14 +506,14 @@ const handleSubmit = async (e) => {
                 className="w-full p-2 border rounded focus:ring-2 focus:ring-indigo-500"
               />
 
-{/* Preview if selected */}
-{form.imageFile && (
-  <img 
-    src={URL.createObjectURL(form.imageFile)} 
-    alt="Preview" 
-    className="w-20 h-20 rounded-full object-cover mt-2"
-  />
-)}
+                {/* Preview if selected */}
+                {form.imageFile && (
+                  <img 
+                    src={URL.createObjectURL(form.imageFile)} 
+                    alt="Preview" 
+                    className="w-20 h-20 rounded-full object-cover mt-2"
+                  />
+                )}
 
 
               </div>
