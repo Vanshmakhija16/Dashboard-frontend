@@ -1318,7 +1318,12 @@ export default function BookSession() {
           `❌ You can book only 'two' sessions per day.\nTry again tomorrow after 9AM.`
         );
       }
+      
     }
+    finally {
+    // ✅ Always reset loading
+    setLoading(false);
+  }
   };
 
   const handleLogout = () => {
@@ -1515,7 +1520,7 @@ export default function BookSession() {
                         const formattedDate = d.toISOString().split("T")[0];
 
                         const isSelected = form.date === formattedDate;
-                        
+
                         console.log("Image URL:",
                         selectedDoctor.profileImage?.startsWith("http") ?
                         selectedDoctor.profileImage : `${backend_url}$
