@@ -1171,7 +1171,7 @@ export default function BookSession() {
   const [form, setForm] = useState({ date: "", slot: "", notes: "", mode: "online" });
   const [message, setMessage] = useState("");
   const [availableDates, setAvailableDates] = useState([]); // [{date, slots}, ...]
-  const [loader,setLoader] = useState(false);
+  const [loading,setLoading] = useState(false);
 
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -1353,7 +1353,10 @@ export default function BookSession() {
           <img src={minderyLogo} alt="Logo" className="h-8 drop-shadow-md" />
           <h1 className="text-2xl text-teal-600 font-bold">Mindery</h1>
           <button onClick={() => setSidebarOpen(false)}>
-            <X size={24} className="text-gray-800 hover:text-red-600 transition" />
+            <X
+              size={24}
+              className="text-gray-800 hover:text-red-600 transition"
+            />
           </button>
         </div>
 
@@ -1436,10 +1439,16 @@ export default function BookSession() {
 
         <section className="space-y-7 animate-fade-in w-[55%] m-auto">
           {displayedDoctors.length === 0 ? (
-            <p className="text-center text-gray-400 text-lg mt-16">Loading...</p>
+            <p className="text-center text-gray-400 text-lg mt-16">
+              Loading...
+            </p>
           ) : (
             displayedDoctors.map((doctor) => (
-              <DoctorCard key={doctor._id} doctor={doctor} onBookClick={handleBookClick} />
+              <DoctorCard
+                key={doctor._id}
+                doctor={doctor}
+                onBookClick={handleBookClick}
+              />
             ))
           )}
         </section>
@@ -1459,28 +1468,35 @@ export default function BookSession() {
 
               {/* Doctor Info */}
               <div className="flex items-center space-x-4 mb-5">
+                console.log("Image URL:",
+                selectedDoctor.profileImage?.startsWith("http") ?
+                selectedDoctor.profileImage : `${backend_url}$
+                {selectedDoctor.profileImage?.replace(/^\/+/, "")}` );
                 <img
                   src={
                     selectedDoctor.profileImage?.startsWith("http")
                       ? selectedDoctor.profileImage
-                      : `${backend_url}${selectedDoctor.profileImage?.replace(/^\/+/, "")}`
+                      : `${backend_url}${selectedDoctor.profileImage?.replace(
+                          /^\/+/,
+                          ""
+                        )}`
                   }
-
                   alt={selectedDoctor.name}
                   className="w-16 h-16 rounded-full object-cover border shadow"
                 />
-                <h2  className="text-2xl font-bold text-teal-700">
+                <h2 className="text-2xl font-bold text-teal-700">
                   Book Session with {selectedDoctor.name}
                 </h2>
               </div>
-
-
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Date Picker */}
                 <div className="flex flex-col space-y-2">
                   <label className="text-sm font-semibold text-gray-700 flex items-center">
-                    <CalendarDays className="inline mr-2 text-teal-600" size={18} />
+                    <CalendarDays
+                      className="inline mr-2 text-teal-600"
+                      size={18}
+                    />
                     Select Date
                   </label>
                   <div className="relative">
@@ -1491,7 +1507,10 @@ export default function BookSession() {
                     >
                       <ChevronLeft size={18} />
                     </button>
-                    <div ref={dateScrollRef} className="flex space-x-3 overflow-x-auto no-scrollbar px-6 pb-2">
+                    <div
+                      ref={dateScrollRef}
+                      className="flex space-x-3 overflow-x-auto no-scrollbar px-6 pb-2"
+                    >
                       {availableDates.map((day, i) => {
                         const d = new Date(day.date);
                         const formattedDate = d.toISOString().split("T")[0];
@@ -1510,7 +1529,9 @@ export default function BookSession() {
                               }`}
                           >
                             <span className="font-bold">{d.getDate()}</span>
-                            <span className="text-xs">{d.toLocaleString("en-US", { month: "short" })}</span>
+                            <span className="text-xs">
+                              {d.toLocaleString("en-US", { month: "short" })}
+                            </span>
                           </button>
                         );
                       })}
@@ -1532,7 +1553,9 @@ export default function BookSession() {
                     Select Time Slot
                   </label>
                   {!form.date ? (
-                    <p className="text-gray-500 text-sm italic">Pick a date above to view slots</p>
+                    <p className="text-gray-500 text-sm italic">
+                      Pick a date above to view slots
+                    </p>
                   ) : (
                     <div className="relative">
                       <button
@@ -1542,11 +1565,19 @@ export default function BookSession() {
                       >
                         <ChevronLeft size={18} />
                       </button>
-                      <div ref={slotScrollRef} className="flex space-x-3 overflow-x-auto no-scrollbar px-6 pb-2">
-                        {(availableDates.find((d) => d.date === form.date)?.slots || [])
+                      <div
+                        ref={slotScrollRef}
+                        className="flex space-x-3 overflow-x-auto no-scrollbar px-6 pb-2"
+                      >
+                        {(
+                          availableDates.find((d) => d.date === form.date)
+                            ?.slots || []
+                        )
                           .filter((slot) => {
                             const now = new Date();
-                            const slotTime = new Date(`${form.date}T${slot.startTime}`);
+                            const slotTime = new Date(
+                              `${form.date}T${slot.startTime}`
+                            );
                             return slotTime >= now;
                           })
                           .map((slot, i) => {
@@ -1556,7 +1587,9 @@ export default function BookSession() {
                               <button
                                 key={i}
                                 type="button"
-                                onClick={() => setForm({ ...form, slot: slotValue })}
+                                onClick={() =>
+                                  setForm({ ...form, slot: slotValue })
+                                }
                                 className={`px-4 py-2 rounded-xl text-sm font-medium border shadow-sm transition-all duration-200 whitespace-nowrap
                                   ${
                                     isSelected
@@ -1582,7 +1615,9 @@ export default function BookSession() {
 
                 {/* Notes */}
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-700">Additional Notes (Optional)</label>
+                  <label className="text-sm font-semibold text-gray-700">
+                    Additional Notes (Optional)
+                  </label>
                   <textarea
                     name="notes"
                     placeholder="Write something about your appointment..."
@@ -1602,21 +1637,27 @@ export default function BookSession() {
                     Cancel
                   </button>
                   <button
-      type="submit"
-      onClick={handleBookClick}
-      disabled={loading}
-      className={`flex items-center justify-center px-4 py-2 rounded-lg bg-teal-600 text-white shadow-md transition-transform hover:scale-105 ${
-        loading ? "opacity-70 cursor-not-allowed" : "hover:bg-teal-700"
-      }`}
-    >
-      {loading ? (
-        <LuLoaderCircle className="animate-spin mr-2" size={20} />
-      ) : null}
-      {loading ? "Booking..." : "Book"}
-    </button>
+                    type="submit"
+                    onClick={handleBookClick}
+                    disabled={loading}
+                    className={`flex items-center justify-center px-4 py-2 rounded-lg bg-teal-600 text-white shadow-md transition-transform hover:scale-105 ${
+                      loading
+                        ? "opacity-70 cursor-not-allowed"
+                        : "hover:bg-teal-700"
+                    }`}
+                  >
+                    {loading ? (
+                      <LuLoaderCircle className="animate-spin mr-2" size={20} />
+                    ) : null}
+                    {loading ? "Booking..." : "Book"}
+                  </button>
                 </div>
 
-                {message && <p className="mt-2 text-sm text-center font-medium">{message}</p>}
+                {message && (
+                  <p className="mt-2 text-sm text-center font-medium">
+                    {message}
+                  </p>
+                )}
               </form>
             </div>
           </div>
