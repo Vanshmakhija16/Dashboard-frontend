@@ -21,14 +21,14 @@
 
 //   const badge = getAvailabilityBadge(doctor.availabilityType);
 
-//   return (  
+//   return (
 // <div
 //   className="
-//     bg-white border border-gray-200 rounded-2xl 
+//     bg-white border border-gray-200 rounded-2xl
 //     p-4 sm:p-6   /* smaller padding on mobile, bigger on desktop */
 //     min-h-[120px]
-//     flex flex-col space-y-3 
-//     shadow-md hover:shadow-xl 
+//     flex flex-col space-y-3
+//     shadow-md hover:shadow-xl
 //     transition-all duration-300 transform hover:-translate-y-1
 //     w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg
 //     mx-auto
@@ -45,7 +45,6 @@
 //   alt={doctor.name}
 //   className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover shadow"
 // />
-
 
 //     <div className="flex-1 min-w-0">
 //       <h3 className="text-base sm:text-xl font-bold text-gray-800 truncate">
@@ -77,11 +76,11 @@
 //   {/* Book button */}
 //   <button
 //     className="
-//       mt-4 py-2 px-3 sm:px-4 
-//       text-sm sm:text-base 
-//       font-semibold rounded-lg 
-//       transition-colors 
-//       bg-teal-700 hover:bg-teal-800 text-white 
+//       mt-4 py-2 px-3 sm:px-4
+//       text-sm sm:text-base
+//       font-semibold rounded-lg
+//       transition-colors
+//       bg-teal-700 hover:bg-teal-800 text-white
 //       disabled:bg-gray-400 disabled:cursor-not-allowed
 //     "
 //     onClick={() => onBookClick(doctor)}
@@ -233,7 +232,6 @@
 //   }
 // };
 
-
 //   const handleLogout = () => {
 //     localStorage.removeItem("token");
 //     navigate("/");
@@ -379,9 +377,6 @@
 //   alt={selectedDoctor.name}
 //   className="w-16 h-16 rounded-full object-cover border shadow"
 // />
-
-
-
 
 //                 <h2 className="text-2xl font-bold text-teal-700">
 //                   Book Session with {selectedDoctor.name}
@@ -536,10 +531,6 @@
 //   );
 // }
 
-
-
-
-
 // import React, { useState, useEffect, useRef } from "react";
 // import { Menu, X, CalendarDays, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 // import { useNavigate } from "react-router-dom";
@@ -566,7 +557,7 @@
 //   return (
 //     <div
 //       className="
-//         bg-white border border-gray-200 rounded-2xl 
+//         bg-white border border-gray-200 rounded-2xl
 //         p-4 sm:p-6
 //         min-h-[120px]
 //         flex flex-col space-y-3
@@ -1054,21 +1045,19 @@
 //   );
 // }
 
-
-
-
-
-
-
-
-
 import React, { useState, useEffect, useRef } from "react";
-import { Menu, X, CalendarDays, Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Menu,
+  X,
+  CalendarDays,
+  Clock,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import minderyLogo from "../assets/mindery.png";
 import { LuLoaderCircle } from "react-icons/lu";
-
 
 const backend_url = import.meta.env.VITE_API_BASE_URL;
 
@@ -1168,10 +1157,15 @@ export default function BookSession() {
   const [activeTab, setActiveTab] = useState("all");
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
-  const [form, setForm] = useState({ date: "", slot: "", notes: "", mode: "online" });
+  const [form, setForm] = useState({
+    date: "",
+    slot: "",
+    notes: "",
+    mode: "online",
+  });
   const [message, setMessage] = useState("");
   const [availableDates, setAvailableDates] = useState([]); // [{date, slots}, ...]
-  const [loading,setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -1192,9 +1186,12 @@ export default function BookSession() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await axios.get(`${backend_url}/api/doctors/my-university`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(
+          `${backend_url}/api/doctors/my-university`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setDoctors(res.data.data || []);
       } catch (err) {
         console.error(err);
@@ -1203,7 +1200,8 @@ export default function BookSession() {
     fetchDoctors();
   }, [token]);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   // ✅ Updated handleDateChange to enforce ISO date format
   const handleDateChange = (rawDate) => {
@@ -1218,9 +1216,12 @@ export default function BookSession() {
 
   const handleBookClick = async (doctor) => {
     try {
-      const doctorRes = await axios.get(`${backend_url}/api/doctors/${doctor._id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const doctorRes = await axios.get(
+        `${backend_url}/api/doctors/${doctor._id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       const fullDoctor = doctorRes.data?.data || doctor;
       setSelectedDoctor(fullDoctor);
 
@@ -1232,7 +1233,10 @@ export default function BookSession() {
       setAvailableDates(dates);
 
       // ✅ Convert initial date to YYYY-MM-DD
-      let initialDate = dates.length > 0 ? new Date(dates[0].date).toISOString().split("T")[0] : "";
+      let initialDate =
+        dates.length > 0
+          ? new Date(dates[0].date).toISOString().split("T")[0]
+          : "";
 
       setForm({
         date: initialDate,
@@ -1260,14 +1264,12 @@ export default function BookSession() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true)
+    setLoading(true);
 
     if (!selectedDoctor || !form.date || !form.slot) {
       setMessage("❌ Please select a doctor, date, and time slot");
       return;
     }
-
-
 
     try {
       const [startTimeStr, endTimeStr] = form.slot.split("|");
@@ -1276,7 +1278,9 @@ export default function BookSession() {
       const localSlotEnd = new Date(`${form.date}T${endTimeStr}:00`);
 
       if (isNaN(localSlotStart) || isNaN(localSlotEnd)) {
-        setMessage("❌ Invalid date or time selected. Please pick a valid slot.");
+        setMessage(
+          "❌ Invalid date or time selected. Please pick a valid slot."
+        );
         return;
       }
 
@@ -1307,7 +1311,6 @@ export default function BookSession() {
 
       setMessage("✅ Session booked successfully!");
       setModalOpen(false);
-
     } catch (err) {
       console.error("Booking error:", err.response?.data || err.message);
 
@@ -1318,12 +1321,10 @@ export default function BookSession() {
           `❌ You can book only 'two' sessions per day.\nTry again tomorrow after 9AM.`
         );
       }
-      
+    } finally {
+      // ✅ Always reset loading
+      setLoading(false);
     }
-    finally {
-    // ✅ Always reset loading
-    setLoading(false);
-  }
   };
 
   const handleLogout = () => {
@@ -1332,9 +1333,15 @@ export default function BookSession() {
   };
 
   const filteredDoctors = {
-    online: doctors.filter((d) => d.availabilityType === "online" && d.isAvailable === "available"),
-    offline: doctors.filter((d) => d.availabilityType === "offline" && d.isAvailable === "available"),
-    both: doctors.filter((d) => d.availabilityType === "both" && d.isAvailable === "available"),
+    online: doctors.filter(
+      (d) => d.availabilityType === "online" && d.isAvailable === "available"
+    ),
+    offline: doctors.filter(
+      (d) => d.availabilityType === "offline" && d.isAvailable === "available"
+    ),
+    both: doctors.filter(
+      (d) => d.availabilityType === "both" && d.isAvailable === "available"
+    ),
   };
 
   const displayedDoctors =
@@ -1457,7 +1464,6 @@ export default function BookSession() {
             ))
           )}
         </section>
-        
 
         {/* Booking Modal */}
         {modalOpen && selectedDoctor && (
@@ -1474,8 +1480,19 @@ export default function BookSession() {
 
               {/* Doctor Info */}
               <div className="flex items-center space-x-4 mb-5">
-                
                 {/* Doctor Img */}
+                {/* Debug log */}
+                {console.log(
+                  "Image URL:",
+                  selectedDoctor.profileImage?.startsWith("http")
+                    ? selectedDoctor.profileImage
+                    : `${backend_url}${selectedDoctor.profileImage?.replace(
+                        /^\/+/,
+                        ""
+                      )}`
+                )}
+
+                {/* Image */}
                 <img
                   src={
                     selectedDoctor.profileImage?.startsWith("http")
@@ -1488,6 +1505,7 @@ export default function BookSession() {
                   alt={selectedDoctor.name}
                   className="w-16 h-16 rounded-full object-cover border shadow"
                 />
+
                 <h2 className="text-2xl font-bold text-teal-700">
                   Book Session with {selectedDoctor.name}
                 </h2>
@@ -1521,10 +1539,13 @@ export default function BookSession() {
 
                         const isSelected = form.date === formattedDate;
 
-                        console.log("Image URL:",
-                        selectedDoctor.profileImage?.startsWith("http") ?
-                        selectedDoctor.profileImage : `${backend_url}$
-                        {selectedDoctor.profileImage?.replace(/^\/+/, "")}` );
+                        console.log(
+                          "Image URL:",
+                          selectedDoctor.profileImage?.startsWith("http")
+                            ? selectedDoctor.profileImage
+                            : `${backend_url}$
+                        {selectedDoctor.profileImage?.replace(/^\/+/, "")}`
+                        );
 
                         return (
                           <button
