@@ -1452,6 +1452,7 @@ export default function BookSession() {
             ))
           )}
         </section>
+        
 
         {/* Booking Modal */}
         {modalOpen && selectedDoctor && (
@@ -1468,10 +1469,8 @@ export default function BookSession() {
 
               {/* Doctor Info */}
               <div className="flex items-center space-x-4 mb-5">
-                console.log("Image URL:",
-                selectedDoctor.profileImage?.startsWith("http") ?
-                selectedDoctor.profileImage : `${backend_url}$
-                {selectedDoctor.profileImage?.replace(/^\/+/, "")}` );
+                
+                {/* Doctor Img */}
                 <img
                   src={
                     selectedDoctor.profileImage?.startsWith("http")
@@ -1514,7 +1513,13 @@ export default function BookSession() {
                       {availableDates.map((day, i) => {
                         const d = new Date(day.date);
                         const formattedDate = d.toISOString().split("T")[0];
+
                         const isSelected = form.date === formattedDate;
+                        
+                        console.log("Image URL:",
+                        selectedDoctor.profileImage?.startsWith("http") ?
+                        selectedDoctor.profileImage : `${backend_url}$
+                        {selectedDoctor.profileImage?.replace(/^\/+/, "")}` );
 
                         return (
                           <button
