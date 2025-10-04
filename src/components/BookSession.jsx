@@ -439,10 +439,7 @@ export default function BookSession() {
                   "Image URL:",
                   selectedDoctor.profileImage?.startsWith("http")
                     ? selectedDoctor.profileImage
-                    : `${backend_url}${selectedDoctor.profileImage?.replace(
-                        /^\/+/,
-                        ""
-                      )}`
+                    : `${backend_url}${selectedDoctor.profileImage?.replace(/^\/+/,"")}`
                 )}
 
                 {/* Image */}
