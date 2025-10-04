@@ -70,7 +70,7 @@ const DoctorCard = ({ doctor, onBookClick }) => {
 
       {/* Availability Badge */}
       <div className="flex flex-wrap justify-between items-center gap-2">
-        <p className="text-xs sm:text-sm font-medium text-red-700">
+        <p className="text-xs sm:text-sm font-medium text-green-700">
           📅 Available for Booking
         </p>
         <span
