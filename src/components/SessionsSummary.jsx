@@ -16,10 +16,10 @@ export default function SessionsSummary() {
     async function fetchData() {
       try {
         // Fetch attended sessions
-        const attendedRes = await axios.get(
-          `${backend_url}/api/appointments/my/attended`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        // const attendedRes = await axios.get(
+        //   `${backend_url}/api/appointments/my/attended`,
+        //   { headers: { Authorization: `Bearer ${token}` } }
+        // );
 
         // Fetch upcoming sessions
         const upcomingRes = await axios.get(
