@@ -167,118 +167,137 @@ export default function BookSession() {
     setForm({ ...form, date: formattedDate, slot: "" });
   };
 
-  const handleBookClick = async (doctor) => {
-    try {
-      const doctorRes = await axios.get(
-        `${backend_url}/api/doctors/${doctor._id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      const fullDoctor = doctorRes.data?.data || doctor;
-      setSelectedDoctor(fullDoctor);
-
-      const datesRes = await axios.get(
-        `${backend_url}/api/doctors/${doctor._id}/available-dates?days=14`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const dates = datesRes.data?.data || [];
-      setAvailableDates(dates);
-
-      // ✅ Convert initial date to YYYY-MM-DD
-      let initialDate =
-        dates.length > 0
-          ? new Date(dates[0].date).toISOString().split("T")[0]
-          : "";
-
-      setForm({
-        date: initialDate,
-        slot: "",
-        notes: "",
-        mode: doctor.availabilityType === "offline" ? "offline" : "online",
-      });
-
-      setMessage("");
-      setModalOpen(true);
-    } catch (err) {
-      console.error("Error opening booking modal:", err);
-      setSelectedDoctor(doctor);
-      setAvailableDates([]);
-      setForm({
-        date: "",
-        slot: "",
-        notes: "",
-        mode: doctor.availabilityType === "offline" ? "offline" : "online",
-      });
-      setMessage("");
-      setModalOpen(true);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    if (!selectedDoctor || !form.date || !form.slot) {
-      setMessage("❌ Please select a doctor, date, and time slot");
+const handleBookClick = async (doctor) => {
+  try {
+    // ✅ Ensure doctor ID exists
+    const doctorId = doctor._id || doctor.id;
+    if (!doctorId) {
+      console.error("❌ Doctor ID missing:", doctor);
+      setMessage("❌ Could not find doctor ID. Please refresh the page.");
       return;
     }
 
-    try {
-      const [startTimeStr, endTimeStr] = form.slot.split("|");
+    console.log("🩺 Fetching doctor details for:", doctorId);
 
-      const localSlotStart = new Date(`${form.date}T${startTimeStr}:00`);
-      const localSlotEnd = new Date(`${form.date}T${endTimeStr}:00`);
-
-      if (isNaN(localSlotStart) || isNaN(localSlotEnd)) {
-        setMessage(
-          "❌ Invalid date or time selected. Please pick a valid slot."
-        );
-        return;
+    const doctorRes = await axios.get(
+      `${backend_url}/api/doctors/${doctorId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
       }
+    );
 
-      const slotStart = localSlotStart.toISOString();
-      const slotEnd = localSlotEnd.toISOString();
+    const fullDoctor = doctorRes.data?.data || doctor;
+    setSelectedDoctor(fullDoctor);
 
-      console.log("📩 Sending booking payload:", {
-        doctorId: selectedDoctor._id,
+    const datesRes = await axios.get(
+      `${backend_url}/api/doctors/${doctorId}/available-dates?days=14`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const dates = datesRes.data?.data || [];
+    setAvailableDates(dates);
+
+    let initialDate =
+      dates.length > 0
+        ? new Date(dates[0].date).toISOString().split("T")[0]
+        : "";
+
+    setForm({
+      date: initialDate,
+      slot: "",
+      notes: "",
+      mode: doctor.availabilityType === "offline" ? "offline" : "online",
+    });
+
+    setMessage("");
+    setModalOpen(true);
+  } catch (err) {
+    console.error("Error opening booking modal:", err);
+    setSelectedDoctor(doctor);
+    setAvailableDates([]);
+    setForm({
+      date: "",
+      slot: "",
+      notes: "",
+      mode: doctor.availabilityType === "offline" ? "offline" : "online",
+    });
+    setMessage("");
+    setModalOpen(true);
+  }
+};
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+
+  if (!selectedDoctor || !form.date || !form.slot) {
+    setMessage("❌ Please select a doctor, date, and time slot");
+    setLoading(false);
+    return;
+  }
+
+  try {
+    const [startTimeStr, endTimeStr] = form.slot.split("|");
+
+    const localSlotStart = new Date(`${form.date}T${startTimeStr}:00`);
+    const localSlotEnd = new Date(`${form.date}T${endTimeStr}:00`);
+
+    if (isNaN(localSlotStart) || isNaN(localSlotEnd)) {
+      setMessage("❌ Invalid date or time selected. Please pick a valid slot.");
+      setLoading(false);
+      return;
+    }
+
+    const slotStart = localSlotStart.toISOString();
+    const slotEnd = localSlotEnd.toISOString();
+
+    // ✅ Doctor ID fallback
+    const doctorId = selectedDoctor._id || selectedDoctor.id;
+    if (!doctorId) {
+      setMessage("❌ Could not find doctor ID. Please refresh and try again.");
+      setLoading(false);
+      return;
+    }
+
+    console.log("📩 Sending booking payload:", {
+      doctorId,
+      slotStart,
+      slotEnd,
+      notes: form.notes,
+      mode: form.mode.toLowerCase(),
+    });
+
+    await axios.post(
+      `${backend_url}/api/sessions`,
+      {
+        doctorId,
         slotStart,
         slotEnd,
         notes: form.notes,
         mode: form.mode.toLowerCase(),
-      });
-
-      await axios.post(
-        `${backend_url}/api/sessions`,
-        {
-          doctorId: selectedDoctor._id,
-          slotStart,
-          slotEnd,
-          notes: form.notes,
-          mode: form.mode.toLowerCase(),
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      setMessage("✅ Session booked successfully!");
-      setModalOpen(false);
-    } catch (err) {
-      console.error("Booking error:", err.response?.data || err.message);
-
-      if (err.response?.status === 400 && err.response?.data?.error) {
-        setMessage(`❌ ${err.response.data.error}`);
-      } else {
-        setMessage(
-          `❌ You can book only 'two' sessions per day.\nTry again tomorrow after 9AM.`
-        );
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
       }
-    } finally {
-      // ✅ Always reset loading
-      setLoading(false);
+    );
+
+    setMessage("✅ Session booked successfully!");
+    setModalOpen(false);
+  } catch (err) {
+    console.error("Booking error:", err.response?.data || err.message);
+
+    if (err.response?.status === 400 && err.response?.data?.error) {
+      setMessage(`❌ ${err.response.data.error}`);
+    } else {
+      setMessage(
+        `❌ You can book only 'two' sessions per day.\nTry again tomorrow after 9AM.`
+      );
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleLogout = () => {
     localStorage.removeItem("token");
