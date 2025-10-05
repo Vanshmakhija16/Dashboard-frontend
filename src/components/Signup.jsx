@@ -59,6 +59,8 @@ export default function Signup() {
       } else {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("userId", response.data.user.id || response.data.user._id);
+
 
         const { role } = response.data.user;
         if (role === "admin") navigate("/admin-dashboard");
