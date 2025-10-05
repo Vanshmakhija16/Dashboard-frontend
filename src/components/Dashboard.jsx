@@ -221,8 +221,8 @@ export default function Dashboard() {
 
     async function fetchData() {
       try {
-        const assessmentsRes = await axios.get(`${backend_url}/api/assessments`);
-        setAssessments(assessmentsRes.data);
+        // const assessmentsRes = await axios.get(`${backend_url}/api/assessments`);
+        // setAssessments(assessmentsRes.data);
 
         const attendedRes = await axios.get(`${backend_url}/api/appointments/my/attended`, {
           headers: { Authorization: `Bearer ${token}` },

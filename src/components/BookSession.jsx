@@ -28,6 +28,8 @@ const DoctorCard = ({ doctor, onBookClick }) => {
   };
 
   const badge = getAvailabilityBadge(doctor.availabilityType);
+  console.log(doctor.imageUrl);
+  console.log(`${backend_url}${doctor.imageUrl}`);
 
   return (
     <div
@@ -44,15 +46,17 @@ const DoctorCard = ({ doctor, onBookClick }) => {
     >
       {/* Image + Name + Specialization */}
       <div className="flex items-center space-x-3 sm:space-x-4 mb-3">
-        <img
-          src={
-            doctor.profileImage?.startsWith("http")
-              ? doctor.profileImage
-              : `${backend_url}/${doctor.profileImage?.replace(/^\/+/, "")}`
-          }
-          alt={doctor.name}
-          className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover shadow"
-        />
+        
+       <img
+        src={
+          doctor.imageUrl?.startsWith("http")
+            ? doctor.imageUrl
+            : `${backend_url}${doctor.imageUrl?.startsWith("/") ? doctor.imageUrl : "/" + doctor.imageUrl}`
+        }
+        alt={doctor.name}
+        className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover shadow"
+      />
+
         <div className="flex-1 min-w-0">
           <h3 className="text-base sm:text-xl font-bold text-gray-800 truncate">
             {doctor.name}
