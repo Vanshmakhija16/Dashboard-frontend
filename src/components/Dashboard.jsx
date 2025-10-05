@@ -221,8 +221,8 @@ export default function Dashboard() {
 
     async function fetchData() {
       try {
-        // const assessmentsRes = await axios.get(`${backend_url}/api/assessments`);
-        // setAssessments(assessmentsRes.data);
+        const assessmentsRes = await axios.get(`${backend_url}/api/assessments`);
+        setAssessments(assessmentsRes.data);
 
         const attendedRes = await axios.get(`${backend_url}/api/appointments/my/attended`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -397,46 +397,46 @@ const handleConsentAccept = async () => {
             </div>
           </div>
 
-<section className="bg-yellow-100/40 backdrop-blur-xl rounded-3xl shadow-xl p-10 mb-12 select-text">
-  <h3 className="text-3xl font-bold mb-4 text-gray-800">🧠 Assessments</h3>
-  <p className="text-gray-700 max-w-2xl mx-auto mb-8">
-    Take a quick test to check your mood, personality, and overall well-being.
-  </p>
+      <section className="bg-yellow-100/40 backdrop-blur-xl rounded-3xl shadow-xl p-10 mb-12 select-text">
+        <h3 className="text-3xl font-bold mb-4 text-gray-800">🧠 Assessments</h3>
+        <p className="text-gray-700 max-w-2xl mx-auto mb-8">
+          Take a quick test to check your mood, personality, and overall well-being.
+        </p>
 
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-    {loading ? (
-      <div className="col-span-full text-center text-gray-500">
-        Loading assessments...
-      </div>
-    ) : (
-      assessments.map((a, i) => (
-        <div
-          key={a.slug}
-          onClick={() => navigate(`/assessments/${a.slug}`)}
-          className={`flex flex-col rounded-3xl p-6 shadow-md transition transform cursor-pointer hover:shadow-2xl hover:scale-[1.03] focus:outline-none focus:ring-4 focus:ring-teal-300 ${
-            i % 3 === 0
-              ? "bg-purple-100/40"
-              : i % 3 === 1
-              ? "bg-teal-100/40"
-              : "bg-orange-100/40"
-          }`}
-          title={`Start ${a.title}`}
-          aria-label={`Start ${a.title}`}
-          tabIndex={0}
-        >
-          <h4 className="text-xl font-semibold text-teal-700 mb-3 text-left">
-            {a.title}
-          </h4>
-          <p className="text-gray-700 flex-grow text-left">{a.description}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          {loading ? (
+            <div className="col-span-full text-center text-gray-500">
+              Loading assessments...
+            </div>
+          ) : (
+            assessments.map((a, i) => (
+              <div
+                key={a.slug}
+                onClick={() => navigate(`/assessments/${a.slug}`)}
+                className={`flex flex-col rounded-3xl p-6 shadow-md transition transform cursor-pointer hover:shadow-2xl hover:scale-[1.03] focus:outline-none focus:ring-4 focus:ring-teal-300 ${
+                  i % 3 === 0
+                    ? "bg-purple-100/40"
+                    : i % 3 === 1
+                    ? "bg-teal-100/40"
+                    : "bg-orange-100/40"
+                }`}
+                title={`Start ${a.title}`}
+                aria-label={`Start ${a.title}`}
+                tabIndex={0}
+              >
+                <h4 className="text-xl font-semibold text-teal-700 mb-3 text-left">
+                  {a.title}
+                </h4>
+                <p className="text-gray-700 flex-grow text-left">{a.description}</p>
 
-          <span className="mt-6 inline-block text-teal-600 font-semibold hover:underline underline-offset-2">
-            Start →
-          </span>
+                <span className="mt-6 inline-block text-teal-600 font-semibold hover:underline underline-offset-2">
+                  Start →
+                </span>
+              </div>
+            ))
+          )}
         </div>
-      ))
-    )}
-  </div>
-</section>
+      </section>
 
 
           <div className="text-center">
