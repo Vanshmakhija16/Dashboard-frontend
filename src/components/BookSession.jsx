@@ -466,17 +466,18 @@ const handleSubmit = async (e) => {
                 )}
 
                 {/* Image */}
-                <img
-                  src={
-                    selectedDoctor?.profileImage
-                      ? selectedDoctor.profileImage.startsWith("http")
-                        ? selectedDoctor.profileImage
-                        : `${backend_url.replace(/\/$/,"")}/${selectedDoctor.profileImage.replace(/^\/+/, "")}`
-                      : "/default-avatar.png" // fallback if no profileImage
-                  }
-                  alt={selectedDoctor?.name || "Doctor"}
-                  className="w-16 h-16 rounded-full object-cover border shadow"
-                />
+               <img
+                src={
+                  selectedDoctor?.imageUrl
+                    ? selectedDoctor.imageUrl.startsWith("http")
+                      ? selectedDoctor.imageUrl
+                      : `${backend_url}${selectedDoctor.imageUrl.startsWith("/") ? selectedDoctor.imageUrl : "/" + selectedDoctor.imageUrl}`
+                    : "/default-avatar.png"
+                }
+                alt={selectedDoctor?.name || "Doctor"}
+                className="w-16 h-16 rounded-full object-cover border shadow"
+              />
+
 
                 <h2 className="text-2xl font-bold text-teal-700">
                   Book Session with {selectedDoctor.name}
