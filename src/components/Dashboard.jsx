@@ -75,38 +75,53 @@ function Sidebar({ isOpen, onClose }) {
 
 // Navbar Component
 function Navbar({ onToggle }) {
-  const [studentName, setStudentName] = useState("");
-  
+const [studentName, setStudentName] = useState("");
+  const [loading, setLoading] = useState(true); // ✅ Fixes setLoading error
+  const [assessments, setAssessments] = useState([]); // ✅ Fixes setAssessments error
+  const [totalSessions, setTotalSessions] = useState(0); // ✅ Fixes setTotalSessions error
+  const [upcomingSessions, setUpcomingSessions] = useState(0); // ✅ Fixes setUpcomingSessions error
+
   useEffect(() => {
-      const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-      async function fetchData() {
-        try {
-          // ✅ Fetch assigned assessments for logged-in student
-          const res = await axios.get(`${backend_url}/api/assessments/my/${localStorage.getItem("studentId")}`, {
+    async function fetchData() {
+      try {
+        const res = await axios.get(
+          `${backend_url}/api/assessments/my/${localStorage.getItem("studentId")}`,
+          {
             headers: { Authorization: `Bearer ${token}` },
-          });
-          setAssessments(res.data);  // This now has status: "locked" / "unlocked"
+          }
+        );
+        setAssessments(res.data);
 
-          // Keep your existing session fetches...
-          const attendedRes = await axios.get(`${backend_url}/api/appointments/my/attended`, {
+        const attendedRes = await axios.get(
+          `${backend_url}/api/appointments/my/attended`,
+          {
             headers: { Authorization: `Bearer ${token}` },
-          });
-          setTotalSessions(attendedRes.data.count);
+          }
+        );
+        setTotalSessions(attendedRes.data.count);
 
-          const upcomingRes = await axios.get(`${backend_url}/api/appointments/my/upcoming`, {
+        const upcomingRes = await axios.get(
+          `${backend_url}/api/appointments/my/upcoming`,
+          {
             headers: { Authorization: `Bearer ${token}` },
-          });
-          setUpcomingSessions(upcomingRes.data.count);
-        } catch (err) {
-          console.error("Error fetching data", err);
-        } finally {
-          setLoading(false);
-        }
+          }
+        );
+        setUpcomingSessions(upcomingRes.data.count);
+      } catch (err) {
+        console.error("Error fetching data", err);
+      } finally {
+        setLoading(false);
       }
+    }
 
-      fetchData();
-    }, []);
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>; // optional loader
+  }
 
 return(
 <header className="bg-white/50 backdrop-blur-md shadow-sm border-b border-gray-200 sticky top-0 z-40">
