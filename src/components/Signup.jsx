@@ -98,7 +98,7 @@ export default function Signup() {
           className="w-28 h-28 mb-6 drop-shadow-xl"
         />
         <h1 className="text-4xl md:text-5xl font-extrabold drop-shadow-lg text-center text-teal-700">
-          Mindery Technologies
+          Mindery 
         </h1>
         <p className="mt-4 text-lg text-gray-600 text-center max-w-md">
           Empowering you with{" "}
