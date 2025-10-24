@@ -115,7 +115,7 @@ export default function EmployeeDashboard() {
         {/* Middle: Links */}
         <div className="hidden md:flex items-center gap-6 text-gray-700 font-medium">
           <button className="hover:text-blue-600 transition">Home</button>
-          <button className="hover:text-blue-600 transition">Resources</button>
+          <button  onClick={() => navigate("/resources")} className="hover:text-blue-600 transition">Resources</button>
           <button
             className="hover:text-blue-600"
             onClick={() => navigate("/book-session-employee")}
@@ -199,10 +199,10 @@ export default function EmployeeDashboard() {
           transition={{ delay: 0.4 }}
           className="flex flex-wrap gap-4 justify-center"
         >
-          <button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg transition">
+          <button  onClick={() => navigate("/book-session-employee")} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg transition">
             View Assigned Doctors
           </button>
-          <button className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-lg transition">
+          <button  onClick={() => navigate("/resources")} className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-lg transition">
             Explore Resources
           </button>
         </motion.div>

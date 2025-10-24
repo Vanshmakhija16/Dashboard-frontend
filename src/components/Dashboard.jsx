@@ -497,84 +497,73 @@ const handleConsentAccept = async () => {
             </div>
           </div>
 
-          {/* --- Assessments Section --- */}
-          <section className=" py-16 px-6 select-text">
-            <div className="max-w-7xl mx-auto text-center">
-              <h3 className="text-4xl font-bold mb-4 text-gray-900">🧠 Assessments</h3>
-              <p className="text-gray-600 max-w-2xl mx-auto mb-12">
-                Choose from our comprehensive collection of validated psychological instruments.
-              </p>
+{/* --- Assessments Section (Unlocked Version) --- */}
+<section className="py-16 px-6 select-text">
+  <div className="max-w-7xl mx-auto text-center">
+    <h3 className="text-4xl font-bold mb-4 text-gray-900">🧠 Assessments</h3>
+    <p className="text-gray-600 max-w-2xl mx-auto mb-12">
+      Choose from our comprehensive collection of validated psychological instruments.
+    </p>
 
-              {loading ? (
-                <div className="text-center text-gray-500">Loading assessments...</div>
-              ) : (
-                <div>
-                  {/* Scrollable Row (hidden scrollbar + reduced height cards) */}
-<div className="flex space-x-6 overflow-x-auto no-scrollbar px-2 pb-2">
-  {assessments.map((a, i) => {
-    const bgColors = [
-      "bg-[#E8F0FF]", "bg-[#E8FBE8]", "bg-[#F3E8FF]", 
-      "bg-[#FFF4E5]", "bg-[#FFE8F0]", "bg-[#E8F0FF]",
-    ];
-    const iconColors = [
-      "text-blue-500", "text-green-600", "text-purple-600", 
-      "text-orange-500", "text-pink-600", "text-indigo-600",
-    ];
-    const icons = ["❤️", "🌿", "👤", "🌡️", "💞", "⭐"];
+    {loading ? (
+      <div className="text-center text-gray-500">Loading assessments...</div>
+    ) : (
+      <div>
+        {/* Scrollable Row (hidden scrollbar + reduced height cards) */}
+        <div className="flex space-x-6 overflow-x-auto no-scrollbar px-2 pb-2">
+          {assessments.map((a, i) => {
+            const bgColors = [
+              "bg-[#E8F0FF]", "bg-[#E8FBE8]", "bg-[#F3E8FF]",
+              "bg-[#FFF4E5]", "bg-[#FFE8F0]", "bg-[#E8F0FF]",
+            ];
+            const iconColors = [
+              "text-blue-500", "text-green-600", "text-purple-600",
+              "text-orange-500", "text-pink-600", "text-indigo-600",
+            ];
+            const icons = ["❤️", "🌿", "👤", "🌡️", "💞", "⭐"];
 
-    // Treat undefined status as "locked"
-    const isLocked = !a.status || a.status === "locked";
-
-    return (
-      <div
-        key={a.slug}
-        onClick={() => {
-          if (!isLocked) navigate(`/assessments/${a.slug}`);
-        }}
-        className={`${bgColors[i % bgColors.length]} shadow-md p-4 flex-shrink-0 w-[280px] h-[160px] text-left relative
-          ${isLocked ? "opacity-60 cursor-not-allowed" : "hover:shadow-lg hover:scale-[1.03] cursor-pointer"} transition-transform duration-200`}
-      >
-        {/* Icon */}
-        <div className={`text-2xl ${iconColors[i % iconColors.length]} mb-2`}>
-          {icons[i % icons.length]}
-        </div>
-
-        {/* Title */}
-        <h4 className="text-base font-semibold text-gray-900 mb-3 line-clamp-1">
-          {a.title}
-        </h4>
-
-        {/* Description */}
-        <p className="text-gray-700 text-xs line-clamp-2">
-          {a.description}
-        </p>
-
-        {/* Lock Overlay */}
-        {isLocked && (
-          <div className="absolute top-2 right-2 text-gray-500 text-xl">🔒</div>
-        )}
-      </div>
-    );
-  })}
-</div>
-
-
+            return (
+              <div
+                key={a.slug}
+                onClick={() => navigate(`/assessments/${a.slug}`)} // ✅ Always clickable
+                className={`${bgColors[i % bgColors.length]} shadow-md p-4 flex-shrink-0 w-[280px] h-[160px] text-left relative
+                  hover:shadow-lg hover:scale-[1.03] cursor-pointer transition-transform duration-200`}
+              >
+                {/* Icon */}
+                <div className={`text-2xl ${iconColors[i % iconColors.length]} mb-2`}>
+                  {icons[i % icons.length]}
                 </div>
-              )}
-            </div>
-          </section>
+
+                {/* Title */}
+                <h4 className="text-base font-semibold text-gray-900 mb-3 line-clamp-1">
+                  {a.title}
+                </h4>
+
+                {/* Description */}
+                <p className="text-gray-700 text-xs line-clamp-2">
+                  {a.description}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    )}
+  </div>
+</section>
+
 
 
 
           {/* --- Reports Button --- */}
-          <div className="text-center mt-0">
+          {/* <div className="text-center mt-0">
             <button
               onClick={() => navigate("/student-reports")}
               className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-3 rounded-2xl shadow-md font-semibold transition transform hover:scale-[1.03]"
             >
               📊 View Reports & Analytics
             </button>
-          </div>
+          </div> */}
         </main>
 
         {/* Footer */}
