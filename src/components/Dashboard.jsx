@@ -3,6 +3,9 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Menu, X, LayoutDashboard, BookOpen, CalendarDays, LogOut } from "lucide-react";
 import axios from "axios";
 import minderyLogo from "../assets/mindery.png";
+import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from "react-icons/fa";
+import { Lock } from "lucide-react";
+
 
 const backend_url = import.meta.env.VITE_API_BASE_URL;
 
@@ -19,7 +22,8 @@ function Sidebar({ isOpen, onClose }) {
         href="tel:+9180694640841"
         className="ml-2 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition shadow-sm"
       >
-        📞 +9180694640841
+        {/* 📞 +9180694640841 */}
+        📞Call Us
       </a>
   const menuItems = [
     { to: "/profile", label: "Profile", icon: LayoutDashboard },
@@ -87,7 +91,7 @@ const [studentName, setStudentName] = useState("");
     async function fetchData() {
       try {
         const res = await axios.get(
-          `${backend_url}/api/assessments/my/${localStorage.getItem("studentId")}`,
+          `${backend_url}/api/assessments/my`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -124,68 +128,75 @@ const [studentName, setStudentName] = useState("");
   }
 
 return(
-<header className="bg-white/50 backdrop-blur-md shadow-sm border-b border-gray-200 sticky top-0 z-40">
-  <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+<header className="bg-gradient-to-r from-white via-teal-50 to-indigo-50 backdrop-blur-md shadow-md border-b border-gray-200 sticky top-0 z-40">
+  <div className="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between">
     
     {/* ✅ Left: Logo & Brand */}
     <div className="flex items-center gap-3 min-w-0 flex-shrink-0">
       <img
         src={minderyLogo}
         alt="Mindery Logo"
-        className="w-12 h-12 flex-shrink-0"
+        className="w-11 h-11 flex-shrink-0 rounded-full shadow-sm border border-gray-200"
       />
       <div className="flex flex-col min-w-0">
-        <span className="text-lg font-bold text-teal-600 truncate">
+        <span className="text-lg font-extrabold bg-gradient-to-r from-teal-600 to-indigo-600 bg-clip-text text-transparent tracking-tight">
           Mindery
         </span>
-        <span className="text-xs text-gray-500 truncate">
+        <span className="text-xs text-gray-500 font-medium">
           Grow with clarity
         </span>
       </div>
     </div>
 
     {/* ✅ Center: Navigation (hidden on small screens) */}
-    <nav className="hidden md:flex flex-1 justify-center items-center gap-6 font-medium text-gray-600">
+    <nav className="hidden md:flex flex-1 justify-center items-center gap-6 font-medium">
       <Link
         to="/student-dashboard"
-        className="px-4 py-2 rounded-full bg-teal-600 text-white hover:bg-teal-700 transition shadow-sm"
+        className="px-4 py-2 rounded-full bg-gradient-to-r from-teal-600 to-indigo-600 text-white shadow-sm hover:shadow-md hover:scale-105 transition transform duration-200"
       >
         Home
       </Link>
       <Link
         to="/profile"
-        className="px-4 py-2 rounded-full hover:text-indigo-600 transition "
+        className="px-4 py-2 rounded-full text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition duration-200"
       >
         Profile
       </Link>
-      <Link to="/resources" className="hover:text-indigo-600 transition">
+      <Link
+        to="/resources"
+        className="px-4 py-2 rounded-full text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition duration-200"
+      >
         Resources
       </Link>
-      <Link to="/book-session" className="hover:text-indigo-600 transition">
-        Book a Session
+      <Link
+        to="/book-session"
+        className="px-4 py-2 rounded-full text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition duration-200"
+      >
+        Find a Doctor
       </Link>
       <a
         href="tel:+9180694640841"
-        className="ml-2 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition shadow-sm"
+        className="ml-2 px-4 py-2 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold hover:scale-105 hover:shadow-md transition transform duration-200"
       >
-        📞+9180694640841
+        📞Call Us
+        {/* 📞 +91 80694 64084 */}
       </a>
     </nav>
 
     {/* ✅ Right: Student name + Menu button */}
     <div className="flex items-center gap-3">
       {studentName && (
-        <div className="hidden sm:block font-semibold text-indigo-600 truncate max-w-[8rem]">
+        <div className="hidden sm:block font-semibold text-indigo-700 truncate max-w-[8rem] text-right">
           {studentName}
         </div>
       )}
-      {/* Menu Button - Always visible */}
+      {/* Menu Button */}
       <button
         onClick={onToggle}
-        className="p-2 rounded-lg bg-indigo-100 hover:bg-indigo-200 transition"
+        className="p-2 rounded-xl bg-indigo-100 hover:bg-indigo-200 transition transform hover:scale-105 shadow-sm"
         aria-label="Toggle sidebar"
       >
-        <Menu className="w-5 h-5" />
+        <Menu className="w-5 h-5 text-indigo-600" />
       </button>
     </div>
   </div>
@@ -283,7 +294,7 @@ const handleConsentAccept = async () => {
                 <p className="text-xs text-gray-500">Last Updated: Sept 24, 2025</p>
 
                 <p>
-                  Welcome to <strong className="text-teal-700 font-bold">Mindery Technologies </strong> We provides access to professional
+                  Welcome to <strong className="text-teal-700 font-bold">Mindery  </strong> We provides access to professional
                   counseling sessions and psychological assessments delivered by licensed
                   and qualified Psychologist.
                 </p>
@@ -369,99 +380,265 @@ const handleConsentAccept = async () => {
 
       {/* Main Dashboard Content (hidden under modal if not accepted) */}
       <div
-        className={`flex flex-col flex-1 min-h-screen transition-margin duration-300 ease-in-out ${
+        className={`flex flex-col flex-1 min-h-screen bg-gradient-to-b from-white to-[#fdfcff] transition-all duration-500 ease-in-out ${
           sidebarOpen ? "mr-72" : "mr-0"
         } ${showConsentModal ? "blur-sm pointer-events-none select-none" : ""}`}
       >
+        {/* Navbar */}
         <Navbar onToggle={() => setSidebarOpen(true)} />
 
-        <main className="p-8 max-w-7xl mx-auto flex-grow">
-          <h2 className="text-3xl font-bold text-gray-800 mb-8 select-none text-center">
+        {/* Main */}
+        <main className="p-10 max-w-7xl mx-auto flex-grow">
+          {/* <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">
             Welcome to Mindery ✨
-          </h2>
+          </h2> */}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            <div onClick={()=> navigate('/total-sessions')} className="bg-blue-100/40 backdrop-blur-xl rounded-3xl shadow-xl p-6 text-center hover:scale-105 transition transform duration-300">
-              <h1 
-               className="text-lg font-semibold text-gray-700 mb-2 "
-              >Total Sessions</h1>
-              {/* <p className="text-4xl font-extrabold text-indigo-600">{totalSessions}</p> */}
+        {/* 🧠 Hero Section */}
+<section className="w-full bg-gradient-to-r from-white via-blue-50 to-indigo-50 py-20 px-8 md:px-16 flex flex-col md:flex-row items-center justify-between rounded-3xl shadow-sm max-w-7xl mx-auto my-12">
+  {/* Left Content */}
+  <div className="flex-1 text-center md:text-left space-y-6">
+    <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
+      We help students grow<br className="hidden md:block" /> 
+      <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-600">
+        emotionally and mentally.
+      </span>
+    </h1>
+    <p className="text-gray-600 max-w-md text-lg mx-auto md:mx-0">
+      Mindery helps you assess, understand, and improve your mental wellness with guided sessions, self-assessments, and certified psychologists.
+    </p>
+    <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+      <button
+        onClick={() => navigate("/book-session")}
+        className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-6 py-3 rounded-full font-semibold shadow-md hover:shadow-lg transition-transform hover:scale-105"
+      >
+        Book a Session
+      </button>
+      <button
+        onClick={() => navigate("/resources")}
+        className="border border-indigo-600 text-indigo-700 px-6 py-3 rounded-full font-semibold hover:bg-indigo-50 transition"
+      >
+        Explore Resources
+      </button>
+    </div>
+
+    {/* Stats Row */}
+    <div className="flex flex-wrap gap-8 mt-10 justify-center md:justify-start">
+      <div>
+        <p className="text-3xl font-bold text-indigo-600">10+</p>
+        <p className="text-gray-600 text-sm">Licensed Psychologists</p>
+      </div>
+      <div>
+        <p className="text-3xl font-bold text-indigo-600">100+</p>
+        <p className="text-gray-600 text-sm">Successful Sessions</p>
+      </div>
+      <div>
+        <p className="text-3xl font-bold text-indigo-600">98%</p>
+        <p className="text-gray-600 text-sm">Positive Feedback</p>
+      </div>
+            <div>
+        <p className="text-3xl font-bold text-indigo-600">24/7</p>
+        <p className="text-gray-600 text-sm"> Service</p>
+      </div>
+    </div>
+  </div>
+
+  {/* Right Images */}
+  <div className="flex-1 flex justify-center mt-12 md:mt-0">
+    <div className="grid grid-cols-2 gap-6">
+      <img
+        src="https://imgs.search.brave.com/sxZuNBEfKCBFPN7Y_NMO1mxacRKBNFTnvLzfiMTq5mU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v/ZnJlZS1waG90by9m/YW1pbHktdGhlcmFw/eS1wc3ljaG9sb2dp/c3Qtb2ZmaWNlXzIz/LTIxNDkxNzUxNTQu/anBnP3NlbXQ9YWlz/X2h5YnJpZA"
+        alt="Doctor"
+        className="rounded-3xl shadow-md bg-orange-700 object-cover h-64 w-48"
+      />
+      <div className="flex flex-col gap-6">
+        <img
+          src="https://imgs.search.brave.com/Y9s1BDpkn8dkepZVJy4XxyBGVXzP1VWPgHY-9Ozem_Y/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9wbHVz/LnVuc3BsYXNoLmNv/bS9wcmVtaXVtX3Bo/b3RvLTE2ODIxNDgz/ODA1NDMtYTZmZDQz/NjA3ZGVhP2ZtPWpw/ZyZxPTYwJnc9MzAw/MCZpeGxpYj1yYi00/LjEuMCZpeGlkPU0z/d3hNakEzZkRCOE1I/eHpaV0Z5WTJoOE1U/ZDhmSEJ6ZVdOb2FX/RjBjbWx6ZEh4bGJu/d3dmSHd3Zkh4OE1B/PT0"
+          alt="Doctor"
+          className="rounded-3xl shadow-md bg-purple-100 object-cover h-28 w-40"
+        />
+        <img
+          src="https://imgs.search.brave.com/Caz-2cb_pRdstxmE_JHFU2LXI6Lqhgtr58hGqWD0xnQ/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly90aHVt/YnMuZHJlYW1zdGlt/ZS5jb20vYi9wc3lj/aG9sb2dpc3QtbGlz/dGVuaW5nLXRvLXBh/dGllbnQtY29uZmlk/ZW50LW1hdHVyZS1t/YWxlLXNjaG9vbC1l/eWVnbGFzc2VzLWxv/b2tpbmctdGVlbmFn/ZS10YWtpbmctbm90/ZXMtcGFwZXItZG9j/dW1lbnQtMzc3NjE1/MjY0LmpwZw"
+          alt="Doctor"
+          className="rounded-3xl shadow-md bg-cyan-100 object-cover h-28 w-40"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+          {/* --- Stat Cards Section --- */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            <div
+              onClick={() => navigate("/total-sessions")}
+              className="bg-[#E8F0FF] rounded-2xl p-8 shadow-sm hover:shadow-md transition-all transform hover:scale-[1.02] cursor-pointer text-left"
+            >
+              <div className="text-blue-600 text-3xl mb-3">💙</div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                Total Sessions
+              </h3>
+              <p className="text-4xl font-bold text-blue-700">
+                {totalSessions || "--"}
+              </p>
             </div>
-            <div className="bg-green-100/40 backdrop-blur-xl rounded-3xl shadow-xl p-6 text-center hover:scale-105 transition transform duration-300">
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">Upcoming Sessions</h3>
-              <p className="text-4xl font-extrabold text-green-600">{upcomingSessions}</p>
+
+            <div className="bg-[#E8FBE8] rounded-2xl p-8 shadow-sm hover:shadow-md transition-all transform hover:scale-[1.02] text-left">
+              <div className="text-green-600 text-3xl mb-3">🌿</div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                Upcoming Sessions
+              </h3>
+              <p className="text-4xl font-bold text-green-700">{upcomingSessions}</p>
             </div>
-            <div className="bg-pink-100/40 backdrop-blur-xl rounded-3xl shadow-xl p-6 text-center hover:scale-105 transition transform duration-300">
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">Leave Balance</h3>
-              <p className="text-4xl font-extrabold text-pink-600">10</p>
+
+            <div className="bg-[#FFE8F0] rounded-2xl p-8 shadow-sm hover:shadow-md transition-all transform hover:scale-[1.02] text-left">
+              <div className="text-pink-500 text-3xl mb-3">💖</div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                        Availability              </h3>
+              <p className="text-4xl font-bold text-pink-700">24/7</p>
             </div>
           </div>
 
-      <section className="bg-yellow-100/40 backdrop-blur-xl rounded-3xl shadow-xl p-10 mb-12 select-text">
-        <h3 className="text-3xl font-bold mb-4 text-gray-800">🧠 Assessments</h3>
-        <p className="text-gray-700 max-w-2xl mx-auto mb-8">
-          Take a quick test to check your mood, personality, and overall well-being.
+          {/* --- Assessments Section --- */}
+          <section className=" py-16 px-6 select-text">
+            <div className="max-w-7xl mx-auto text-center">
+              <h3 className="text-4xl font-bold mb-4 text-gray-900">🧠 Assessments</h3>
+              <p className="text-gray-600 max-w-2xl mx-auto mb-12">
+                Choose from our comprehensive collection of validated psychological instruments.
+              </p>
+
+              {loading ? (
+                <div className="text-center text-gray-500">Loading assessments...</div>
+              ) : (
+                <div>
+                  {/* Scrollable Row (hidden scrollbar + reduced height cards) */}
+<div className="flex space-x-6 overflow-x-auto no-scrollbar px-2 pb-2">
+  {assessments.map((a, i) => {
+    const bgColors = [
+      "bg-[#E8F0FF]", "bg-[#E8FBE8]", "bg-[#F3E8FF]", 
+      "bg-[#FFF4E5]", "bg-[#FFE8F0]", "bg-[#E8F0FF]",
+    ];
+    const iconColors = [
+      "text-blue-500", "text-green-600", "text-purple-600", 
+      "text-orange-500", "text-pink-600", "text-indigo-600",
+    ];
+    const icons = ["❤️", "🌿", "👤", "🌡️", "💞", "⭐"];
+
+    // Treat undefined status as "locked"
+    const isLocked = !a.status || a.status === "locked";
+
+    return (
+      <div
+        key={a.slug}
+        onClick={() => {
+          if (!isLocked) navigate(`/assessments/${a.slug}`);
+        }}
+        className={`${bgColors[i % bgColors.length]} shadow-md p-4 flex-shrink-0 w-[280px] h-[160px] text-left relative
+          ${isLocked ? "opacity-60 cursor-not-allowed" : "hover:shadow-lg hover:scale-[1.03] cursor-pointer"} transition-transform duration-200`}
+      >
+        {/* Icon */}
+        <div className={`text-2xl ${iconColors[i % iconColors.length]} mb-2`}>
+          {icons[i % icons.length]}
+        </div>
+
+        {/* Title */}
+        <h4 className="text-base font-semibold text-gray-900 mb-3 line-clamp-1">
+          {a.title}
+        </h4>
+
+        {/* Description */}
+        <p className="text-gray-700 text-xs line-clamp-2">
+          {a.description}
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {loading ? (
-            <div className="col-span-full text-center text-gray-500">
-              Loading assessments...
+        {/* Lock Overlay */}
+        {isLocked && (
+          <div className="absolute top-2 right-2 text-gray-500 text-xl">🔒</div>
+        )}
+      </div>
+    );
+  })}
+</div>
+
+
+                </div>
+              )}
             </div>
-          ) : (
-            assessments.map((a, i) => (
-              <div
-                key={a.slug}
-                onClick={() => navigate(`/assessments/${a.slug}`)}
-                className={`flex flex-col rounded-3xl p-6 shadow-md transition transform cursor-pointer hover:shadow-2xl hover:scale-[1.03] focus:outline-none focus:ring-4 focus:ring-teal-300 ${
-                  i % 3 === 0
-                    ? "bg-purple-100/40"
-                    : i % 3 === 1
-                    ? "bg-teal-100/40"
-                    : "bg-orange-100/40"
-                }`}
-                title={`Start ${a.title}`}
-                aria-label={`Start ${a.title}`}
-                tabIndex={0}
-              >
-                <h4 className="text-xl font-semibold text-teal-700 mb-3 text-left">
-                  {a.title}
-                </h4>
-                <p className="text-gray-700 flex-grow text-left">{a.description}</p>
-
-                <span className="mt-6 inline-block text-teal-600 font-semibold hover:underline underline-offset-2">
-                  Start →
-                </span>
-              </div>
-            ))
-          )}
-        </div>
-      </section>
+          </section>
 
 
-          <div className="text-center">
+
+          {/* --- Reports Button --- */}
+          <div className="text-center mt-0">
             <button
               onClick={() => navigate("/student-reports")}
-              className="bg-gradient-to-r from-indigo-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white px-8 py-3 rounded-2xl shadow-lg font-semibold transition transform hover:scale-105"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-3 rounded-2xl shadow-md font-semibold transition transform hover:scale-[1.03]"
             >
               📊 View Reports & Analytics
             </button>
           </div>
         </main>
 
-        <footer className="bg-white/20 backdrop-blur-xl text-gray-700 mt-16 border-t border-gray-300 py-8">
-          <div className="max-w-7xl mx-auto px-6 text-center select-text">
-            <h3 className="text-lg font-semibold text-gray-800 mb-3">About Mindery</h3>
-            <p className="text-sm max-w-2xl mx-auto">
-              Mindery is your personal learning companion. Our mission is to provide personalized
-              resources, guidance, and session booking to help you grow.
-            </p>
-            <p className="text-xs text-gray-500 mt-6">
-              &copy; {new Date().getFullYear()} Mindery. All rights reserved.
-            </p>
-          </div>
-        </footer>
+        {/* Footer */}
+  {/* Footer */}
+
+{/* Footer */}
+<footer className="bg-gradient-to-t from-gray-100 to-white border-t border-gray-300 mt-20 py-12 text-gray-700">
+  <div className="max-w-7xl mx-auto px-6">
+    {/* Top Section: 3 Columns */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center md:text-left">
+      
+      {/* Column 1 - About */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">About Mindery</h3>
+        <p className="text-sm text-gray-600 leading-relaxed">
+          Mindery is your personal learning companion. Our mission is to provide
+          personalized resources, guidance, and session booking to help you grow.
+        </p>
       </div>
+
+      {/* Column 2 - Quick Links */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">Quick Links</h3>
+        <ul className="space-y-2 text-sm text-gray-600">
+          <li><a href="#" className="hover:text-indigo-600 transition-colors">Home</a></li>
+          <li><a href="#" className="hover:text-indigo-600 transition-colors">Courses</a></li>
+          <li><a href="#" className="hover:text-indigo-600 transition-colors">Book a Session</a></li>
+          <li><a href="#" className="hover:text-indigo-600 transition-colors">Contact Us</a></li>
+        </ul>
+      </div>
+
+      {/* Column 3 - Connect */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">Get in Touch </h3>
+        <p className="text-sm text-gray-600">
+          Email: <a href="mailto:namastemindery@gmail.com" className="hover:text-indigo-600">namastemindery@gmail.com</a>
+        </p>
+        <div className="flex justify-center md:justify-start space-x-5 mt-5">
+          <a
+            href="https://www.instagram.com/mind.ery?igsh=MTFxdnM2a2Fuc291Mg=="
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-500 hover:text-pink-600 transition-colors duration-200"
+          >
+            <FaInstagram size={20} />
+          </a>
+          
+          <a href="#" className="text-gray-500 hover:text-blue-700 transition-colors duration-200">
+            <FaLinkedinIn size={20} />
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {/* Bottom Section */}
+    <div className="border-t border-gray-300 mt-10 pt-6 text-center text-xs text-gray-500">
+      © {new Date().getFullYear()} <span className="font-medium text-gray-700">Mindery</span>. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+
+      </div>
+
 
       {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />

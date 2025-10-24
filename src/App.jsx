@@ -23,6 +23,10 @@ import ReportDashboard from "./components/ReportDashboard"
 import SessionsSummary from "./components/SessionsSummary";
 import Profile from "./components/Profile"
 import Resource from "./components/Resources";
+import EmployeeDashboard from "./components/EmployeeDashboard";
+import CompanyPage from "./components/ComapnyPage";
+import AssignCompanyDoctorsPage from "./components/AssignCompanyDoctorsPage";
+import BookEmployeeSession from "./components/BookEmployeeSession";
 function App() {
   return (
     <Router>
@@ -171,7 +175,12 @@ function App() {
         <Route path="/student-reports" element={<ReportDashboard />} />
         <Route path="/total-sessions" element={<SessionsSummary />} />
         <Route path="/resources" element={<Resource />} />
-        
+        <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
+        <Route path="/admin/companies" element={<CompanyPage />} />
+        <Route path="/companies/:companyId/assign-doctors" element={<AssignCompanyDoctorsPage />} />
+        <Route path="/book-session-employee" element={<BookEmployeeSession />} />
+
+
       </Routes>
     </Router>
   );

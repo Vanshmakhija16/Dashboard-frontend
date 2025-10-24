@@ -13,6 +13,7 @@ export default function UniversitiesPage() {
   const [newAdminEmail, setNewAdminEmail] = useState("");
   const [newAdminPassword, setNewAdminPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [deletingId, setDeletingId] = useState(null);

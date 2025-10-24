@@ -11,6 +11,7 @@ import {
   LogOut,
   GraduationCap,
   UserCog,
+  Building2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -204,6 +205,16 @@ export default function AdminDashboard() {
             <h2 className="text-2xl font-bold mt-4">View</h2>
             <p className="text-gray-600">Universities</p>
           </div>
+          {/* Companies */}
+          <div
+            onClick={() => navigate("/admin/companies")}
+            className="bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl shadow-lg p-6 text-center hover:scale-105 transition transform duration-300 cursor-pointer"
+          >
+            <Building2 size={48} className="text-purple-600 mx-auto" />
+            <h2 className="text-2xl font-bold mt-4">View</h2>
+            <p className="text-gray-600">Companies</p>
+          </div>
+
         </section>
       </main>
     </div>

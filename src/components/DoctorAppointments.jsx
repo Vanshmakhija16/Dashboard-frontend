@@ -4,6 +4,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Calendar, FileText, Menu, LogOut, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Unlock } from "lucide-react"; // For unlock icon
+
 
 const backend_url = import.meta.env.VITE_API_BASE_URL;
 
@@ -21,6 +23,30 @@ export default function DoctorSessions() {
 
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  const [students, setStudents] = useState([]);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [loadingStudents, setLoadingStudents] = useState(false);
+
+
+const fetchStudents = async () => {
+  try {
+    setLoadingStudents(true);
+    const res = await axios.get(`${backend_url}/api/auth/students`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setStudents(res.data);
+  } catch (err) {
+    console.error("Failed to fetch students:", err);
+  } finally {
+    setLoadingStudents(false);
+  }
+};
+
+useEffect(() => {
+  fetchStudents();
+}, []);
+
+
 
   // Fetch sessions from backend
   const fetchSessions = async () => {
@@ -62,6 +88,20 @@ export default function DoctorSessions() {
     localStorage.removeItem("token");
     window.location.href = "/";
   };
+
+  const handleUnlock = async (studentId, assessmentId) => {
+  try {
+    await axios.put(
+      `${backend_url}/api/assessments/unlock/${studentId}/${assessmentId}`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    alert("Assessment unlocked successfully!");
+    fetchStudents(); // refresh list after unlock
+  } catch (err) {
+    alert(err.response?.data?.error || "Error unlocking assessment");
+  }
+};
 
   // -----------------------
   // Frontend filtering logic
@@ -209,102 +249,179 @@ export default function DoctorSessions() {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 p-8">
-        {/* Top Menu */}
-        <header className="flex justify-between items-center mb-6">
-          <Menu
-            className="cursor-pointer text-indigo-800"
-            onClick={() => setSidebarOpen(true)}
-          />
-          <h1 className="text-3xl font-extrabold text-indigo-800 drop-shadow-sm">
-            My Sessions
-          </h1>
-        </header>
+<div className="flex-1 p-8">
+  {/* Top Menu */}
+  <header className="flex justify-between items-center mb-6">
+    <Menu
+      className="cursor-pointer text-indigo-800"
+      onClick={() => setSidebarOpen(true)}
+    />
+    <h1 className="text-3xl font-extrabold text-indigo-800 drop-shadow-sm">
+      My Sessions
+    </h1>
+  </header>
 
-        {/* Filters */}
-        <div className="flex gap-3 mb-6 flex-wrap items-center">
-          {/* Custom Calendar */}
-          <div className="relative">
-            <DatePicker
-              selected={filters.date}
-              onChange={(date) => handleFilterChange("date", date)}
-              placeholderText="Select date"
-              className="border px-3 py-2 rounded-lg shadow-inner focus:ring-2 focus:ring-indigo-300 focus:outline-none"
-              dateFormat="MMMM d, yyyy"
-            />
-            <Calendar
-              className="absolute right-3 top-2.5 text-indigo-500 pointer-events-none"
-              size={20}
-            />
-          </div>
+  {/* Filters */}
+  <div className="flex gap-3 mb-6 flex-wrap items-center">
+    {/* Custom Calendar */}
+    <div className="relative">
+      <DatePicker
+        selected={filters.date}
+        onChange={(date) => handleFilterChange("date", date)}
+        placeholderText="Select date"
+        className="border px-3 py-2 rounded-lg shadow-inner focus:ring-2 focus:ring-indigo-300 focus:outline-none"
+        dateFormat="MMMM d, yyyy"
+      />
+      <Calendar
+        className="absolute right-3 top-2.5 text-indigo-500 pointer-events-none"
+        size={20}
+      />
+    </div>
 
-          <select
-            value={filters.day}
-            onChange={(e) => handleFilterChange("day", e.target.value)}
-            className="border px-3 py-2 rounded-lg shadow-inner focus:ring-2 focus:ring-indigo-300 focus:outline-none"
-          >
-            <option value="">All days</option>
-            {[
-              "Sunday",
-              "Monday",
-              "Tuesday",
-              "Wednesday",
-              "Thursday",
-              "Friday",
-              "Saturday",
-            ].map((d) => (
-              <option key={d} value={d}>
-                {d}
-              </option>
-            ))}
-          </select>
+    <select
+      value={filters.day}
+      onChange={(e) => handleFilterChange("day", e.target.value)}
+      className="border px-3 py-2 rounded-lg shadow-inner focus:ring-2 focus:ring-indigo-300 focus:outline-none"
+    >
+      <option value="">All days</option>
+      {[
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ].map((d) => (
+        <option key={d} value={d}>
+          {d}
+        </option>
+      ))}
+    </select>
 
-          <input
-            type="time"
-            value={filters.startTime}
-            onChange={(e) => handleFilterChange("startTime", e.target.value)}
-            className="border px-3 py-2 rounded-lg shadow-inner focus:ring-2 focus:ring-indigo-300 focus:outline-none"
-          />
-          <input
-            type="time"
-            value={filters.endTime}
-            onChange={(e) => handleFilterChange("endTime", e.target.value)}
-            className="border px-3 py-2 rounded-lg shadow-inner focus:ring-2 focus:ring-indigo-300 focus:outline-none"
-          />
-        </div>
+    <input
+      type="time"
+      value={filters.startTime}
+      onChange={(e) => handleFilterChange("startTime", e.target.value)}
+      className="border px-3 py-2 rounded-lg shadow-inner focus:ring-2 focus:ring-indigo-300 focus:outline-none"
+    />
+    <input
+      type="time"
+      value={filters.endTime}
+      onChange={(e) => handleFilterChange("endTime", e.target.value)}
+      className="border px-3 py-2 rounded-lg shadow-inner focus:ring-2 focus:ring-indigo-300 focus:outline-none"
+    />
+  </div>
 
-        {loading ? (
-          <div className="text-center py-20 text-indigo-600 font-semibold">
-            Loading sessions...
-          </div>
+  {loading ? (
+    <div className="text-center py-20 text-indigo-600 font-semibold">
+      Loading sessions...
+    </div>
+  ) : (
+    <>
+      {/* Upcoming Sessions */}
+      <section>
+        <h2 className="text-2xl font-bold text-center mb-4">Upcoming Sessions</h2>
+        {filterSessions(upcomingSessions).length === 0 ? (
+          <p className="text-center">No upcoming sessions</p>
+        ) : (
+          filterSessions(upcomingSessions).map((s) => (
+            <SessionCard key={s._id} session={s} />
+          ))
+        )}
+      </section>
+
+      {/* History */}
+      <section className="mt-12">
+        <h2 className="text-2xl font-bold text-center mb-4">History</h2>
+        {filterSessions(historySessions).length === 0 ? (
+          <p className="text-center">No past sessions</p>
+        ) : (
+          filterSessions(historySessions).map((s) => (
+            <SessionCard key={s._id} session={s} />
+          ))
+        )}
+      </section>
+
+      {/* ---------------- Unlock Assessments Section ---------------- */}
+      <section className="mt-16">
+        <h2 className="text-2xl font-bold text-center mb-4 text-indigo-800">
+          Unlock Student Assessments
+        </h2>
+
+        {loadingStudents ? (
+          <p className="text-center text-indigo-600">Loading students...</p>
         ) : (
           <>
-            {/* Upcoming Sessions */}
-            <section>
-              <h2 className="text-2xl font-bold text-center mb-4">Upcoming Sessions</h2>
-              {filterSessions(upcomingSessions).length === 0 ? (
-                <p className="text-center" >No upcoming sessions</p>
-              ) : (
-                filterSessions(upcomingSessions).map((s) => (
-                  <SessionCard key={s._id} session={s} />
-                ))
-              )}
-            </section>
+            {/* Select student */}
+            <div className="flex justify-center mb-6">
+              <select
+                value={selectedStudent?._id || ""}
+                onChange={(e) => {
+                  const student = students.find((s) => s._id === e.target.value);
+                  setSelectedStudent(student || null);
+                }}
+                className="border px-4 py-2 rounded-lg shadow-inner focus:ring-2 focus:ring-indigo-300 focus:outline-none w-[300px]"
+              >
+                <option value="">Select a student</option>
+                {students.map((s) => (
+                  <option key={s._id} value={s._id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-            {/* History */}
-            <section className="mt-12">
-              <h2 className="text-2xl font-bold text-center mb-4">History</h2>
-              {filterSessions(historySessions).length === 0 ? (
-                <p className="text-center" >No past sessions</p>
-              ) : (
-                filterSessions(historySessions).map((s) => (
-                  <SessionCard key={s._id} session={s} />
-                ))
-              )}
-            </section>
+            {/* Show assessments for selected student */}
+            {selectedStudent && (
+              <div className="max-w-lg mx-auto bg-white p-6 rounded-2xl shadow-md border">
+                <h3 className="text-lg font-semibold mb-4 text-indigo-700">
+                  Assessments for {selectedStudent.name}
+                </h3>
+
+                {selectedStudent.assessments?.length > 0 ? (
+                  selectedStudent.assessments.map((a) => (
+                    <div
+                      key={a.assessmentId}
+                      className="flex justify-between items-center border-b py-2"
+                    >
+                      <span>
+                        Assessment #{a.assessmentId} –{" "}
+                        <span
+                          className={
+                            a.status === "locked" ? "text-red-600" : "text-green-600"
+                          }
+                        >
+                          {a.status}
+                        </span>
+                      </span>
+
+                      {a.status === "locked" ? (
+                        <button
+                          onClick={() =>
+                            handleUnlock(selectedStudent._id, a.assessmentId)
+                          }
+                          className="bg-indigo-600 text-white px-3 py-1 rounded-lg flex items-center gap-1"
+                        >
+                          <Unlock size={16} /> Unlock
+                        </button>
+                      ) : (
+                        <span className="text-green-600 font-medium">✅ Unlocked</span>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <p>No assessments assigned.</p>
+                )}
+              </div>
+            )}
           </>
         )}
-      </div>
+      </section>
+    </>
+  )}
+</div>
+
     </div>
   );
 }

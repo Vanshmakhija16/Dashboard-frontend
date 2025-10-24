@@ -12,8 +12,9 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
+import { motion } from "framer-motion";
 
-const backend_url = import.meta.env.VITE_API_BASE_URL;
+const backend_url = import.meta.env.VITE_API_BASE_URL || "";
 
 export default function ReportDashboard() {
   const [reportData, setReportData] = useState(null);
@@ -23,21 +24,23 @@ export default function ReportDashboard() {
     async function fetchReport() {
       try {
         const res = await axios.get(`${backend_url}/api/reports`);
-        setReportData(res.data);
+        setReportData(res.data.assessments?.[0] || null);
       } catch (err) {
         console.error("Error fetching reports:", err);
-        // fallback dummy data so UI still works
+        // Fallback demo data
         setReportData({
-          pie: [
+          title: "Stress & Focus Assessment",
+          score: 78,
+          categories: [
             { name: "Stress", value: 40 },
-            { name: "Anxiety", value: 30 },
-            { name: "Focus", value: 30 },
+            { name: "Anxiety", value: 25 },
+            { name: "Focus", value: 13 },
           ],
-          bar: [
-            { name: "Week 1", score: 50 },
-            { name: "Week 2", score: 65 },
-            { name: "Week 3", score: 80 },
-            { name: "Week 4", score: 70 },
+          weeklyProgress: [
+            { week: "Week 1", score: 50 },
+            { week: "Week 2", score: 65 },
+            { week: "Week 3", score: 78 },
+            { week: "Week 4", score: 82 },
           ],
         });
       } finally {
@@ -47,66 +50,133 @@ export default function ReportDashboard() {
     fetchReport();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-600">Loading report...</p>
-      </div>
-    );
-  }
+  const COLORS = ["#00b4d8", "#48cae4", "#90e0ef"];
 
-  if (!reportData) {
+  if (loading)
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-red-600 font-semibold">
-          No report data available. Please take an assessment first.
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-cyan-50 via-white to-cyan-100">
+        <p className="text-cyan-700 font-medium text-lg animate-pulse">
+          Loading Report...
         </p>
       </div>
     );
-  }
 
-  const COLORS = ["#FF6384", "#36A2EB", "#FFCE56"];
+  if (!reportData)
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-cyan-50 via-white to-cyan-100">
+        <p className="text-red-600 font-semibold">
+          No report data found. Please take an assessment.
+        </p>
+      </div>
+    );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <h1 className="text-3xl font-bold text-center mb-8">
-        📊 Your Wellness Reports
-      </h1>
+    <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-white to-cyan-100 p-8">
+      {/* Header */}
+      <div className="text-center mb-10">
+        <h1 className="text-4xl font-bold text-cyan-900 mb-2">
+          {reportData.title}
+        </h1>
+        <p className="text-gray-600 text-lg">
+          Comprehensive mental wellness report overview
+        </p>
+      </div>
 
-      {/* Pie Chart */}
-      <div className="bg-white rounded-2xl shadow p-6 mb-8">
-        <h2 className="text-xl font-semibold mb-4 text-center">Category Breakdown</h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={reportData.pie || []}
-              dataKey="value"
-              nameKey="name"
-              outerRadius={120}
-              fill="#8884d8"
-              label
+      {/* Main Report Container */}
+      <div className="max-w-6xl mx-auto bg-white/80 backdrop-blur-lg shadow-xl rounded-3xl p-10 border border-white/30 space-y-10">
+        {/* Summary Section */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            className="bg-gradient-to-br from-cyan-600 to-cyan-400 text-white rounded-2xl shadow-lg p-6 flex flex-col items-center justify-center"
+          >
+            <p className="text-lg font-medium">Total Score</p>
+            <p className="text-5xl font-extrabold mt-2">{reportData.score}</p>
+          </motion.div>
+
+          {reportData.categories.map((cat, i) => (
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              key={i}
+              className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex flex-col items-center justify-center"
             >
-              {(reportData.pie || []).map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-          </PieChart>
-        </ResponsiveContainer>
+              <p className="text-gray-600 font-medium">{cat.name}</p>
+              <p className="text-3xl font-bold text-cyan-700 mt-2">
+                {cat.value}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
+          {/* Pie Chart */}
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
+          >
+            <h2 className="text-xl font-semibold text-cyan-800 text-center mb-4">
+              Category Breakdown
+            </h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={reportData.categories}
+                  dataKey="value"
+                  nameKey="name"
+                  outerRadius={110}
+                  label
+                >
+                  {reportData.categories.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          </motion.div>
+
+          {/* Bar Chart */}
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
+          >
+            <h2 className="text-xl font-semibold text-cyan-800 text-center mb-4">
+              Weekly Progress Trend
+            </h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={reportData.weeklyProgress}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="week" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="score" fill="#00b4d8" radius={[10, 10, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </motion.div>
+        </div>
+
+        {/* Analysis Section */}
+        <div className="bg-gradient-to-br from-cyan-50 to-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <h2 className="text-xl font-semibold text-cyan-800 mb-3">
+            🩺 Doctor’s Insights
+          </h2>
+          <p className="text-gray-700 leading-relaxed">
+            Based on the current assessment, your overall stress levels show a
+            balanced improvement trajectory with consistent weekly growth. The
+            anxiety index has slightly decreased, while focus retention has
+            improved by 20%. Continue meditation and breathing sessions daily
+            for optimal results.
+          </p>
+        </div>
       </div>
 
-      {/* Bar Chart */}
-      <div className="bg-white rounded-2xl shadow p-6">
-        <h2 className="text-xl font-semibold mb-4 text-center">Progress Over Time</h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={reportData.bar || []}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="score" fill="#36A2EB" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      {/* Footer */}
+      <p className="text-center text-gray-500 mt-10 text-sm">
+        © {new Date().getFullYear()} MindBalance Analytics. All rights reserved.
+      </p>
     </div>
   );
 }
